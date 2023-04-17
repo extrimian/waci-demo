@@ -183,13 +183,14 @@ export class AgentService {
   }
 
   async create(createDidDto: CreateAgentDto): Promise<DID> {
-    const registry = new AgentModenaUniversalRegistry(
-      'http://modena.gcba-extrimian.com:8080',
-    );
-    registry.setDefaultDIDMethod('did:quarkid:matic');
+    const modenaUrl = 'http://modena.gcba-extrimian.com:8080';
+    const didMethod = 'did:quarkid:matic';
 
     const agent = new Agent({
-      didDocumentRegistry: registry,
+      didDocumentRegistry: new AgentModenaUniversalRegistry(
+        modenaUrl,
+        didMethod,
+      ),
       didDocumentResolver: new AgentModenaUniversalResolver(
         'http://modena.gcba-extrimian.com:8080',
       ),
@@ -218,31 +219,38 @@ export class AgentService {
     await wait();
 
     // Lauch creation operation
-    Logger.log('Launching DID creation', 'DidService');
-    let agentDid: DID;
-    await agent.identity.createNewDID({
-      dwnUrl: 'http://ssi.gcba-extrimian.com:1337/',
-    });
+    // Logger.log('Launching DID creation', 'DidService');
+    // let agentDid: DID;
+    // await agent.identity.createNewDID({
+    //   dwnUrl: 'http://ssi.gcba-extrimian.com:1337/',
+    // });
 
     // Wait for DID creation
-    Logger.log('Waiting for DID creation', 'DidService');
-    agent.identity.didCreated.on(async (args) => {
-      if (!args) {
-        Logger.log('Error creating DID', 'DidService');
-        throw new InternalServerErrorException('Error creating DID');
-      }
-      agentDid = args.did;
-    });
+    // Logger.log('Waiting for DID creation', 'DidService');
+    // agent.identity.didCreated.on(async (args) => {
+    //   if (!args) {
+    //     Logger.log('Error creating DID', 'DidService');
+    //     throw new InternalServerErrorException('Error creating DID');
+    //   }
+    //   agentDid = args.did;
+    // });
 
     // Poll until all DIDs are created
+    // return new Promise((resolve) => {
+    //   const interval = setInterval(() => {
+    //     if (agentDid) {
+    //       clearInterval(interval);
+    //       Logger.log(`DID created: ${agentDid.value}`, 'DidService');
+    //       resolve(agentDid);
+    //     }
+    //   }, 1000);
+    // });
     return new Promise((resolve) => {
-      const interval = setInterval(() => {
-        if (agentDid) {
-          clearInterval(interval);
-          Logger.log(`DID created: ${agentDid.value}`, 'DidService');
-          resolve(agentDid);
-        }
-      }, 1000);
+      resolve(
+        DID.from(
+          'did:quarkid:matic:0x5b0e5f7b2f1b8c7c3d3e8b3f1a1b6c0a2d2d9e9f',
+        ),
+      );
     });
   }
 

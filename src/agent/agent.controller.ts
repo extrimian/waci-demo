@@ -20,7 +20,7 @@ import {
 @ApiTags('Agent Management')
 @Controller('agent')
 export class AgentController {
-  constructor(private readonly didService: AgentService) {}
+  constructor(private readonly agentService: AgentService) {}
 
   @Post()
   @ApiBadRequestResponse({ description: 'El tipo de agente es inválido' })
@@ -28,17 +28,17 @@ export class AgentController {
     description: 'Ocurrió un error inesperado creando el DID',
   })
   @ApiCreatedResponse({ description: 'El DID fue creado exitosamente' })
-  async create(@Body() createDidDto: CreateAgentDto) {
-    if (createDidDto.agentType && !AgentTypes[createDidDto.agentType])
+  async create(@Body() createAgentDto: CreateAgentDto) {
+    if (createAgentDto.agentType && !AgentTypes[createAgentDto.agentType])
       throw new BadRequestException(
         `El tipo de agente ${
-          createDidDto.agentType
+          createAgentDto.agentType
         } es inválido. Usar alguno de los siguientes: ${Object.values(
           AgentTypes,
         ).join(', ')}`,
       );
     try {
-      const agentDid = await this.didService.create(createDidDto);
+      const agentDid = await this.agentService.create(createAgentDto);
       return { did: agentDid };
     } catch (error) {
       throw new InternalServerErrorException(
@@ -50,7 +50,7 @@ export class AgentController {
 
   @Get()
   findAll() {
-    return this.didService.findAll();
+    return this.agentService.findAll();
   }
 
   @Get(':type')
@@ -62,7 +62,7 @@ export class AgentController {
         ).join(', ')}`,
       );
 
-    return this.didService.findOne(type);
+    return this.agentService.findOne(type);
   }
 
   @Delete(':type')
@@ -73,6 +73,6 @@ export class AgentController {
           AgentTypes,
         ).join(', ')}`,
       );
-    return this.didService.remove(type);
+    return this.agentService.remove(type);
   }
 }
