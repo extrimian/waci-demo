@@ -3,22 +3,21 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { AgentType, CreateDidDto } from './dto/create-did.dto';
-import { UpdateDidDto } from './dto/update-did.dto';
+import { AgentType, CreateAgentDto } from './dto/create-agent.dto';
 import {
   Agent,
   AgentModenaUniversalRegistry,
   AgentModenaUniversalResolver,
   DID,
-  FileSystemAgentSecureStorage,
-  FileSystemStorage,
   VerifiableCredential,
   WACICredentialOfferSucceded,
   WACIProtocol,
 } from '@extrimian/agent';
+import { FileSystemStorage } from './utils/filesystem-storage';
+import { FileSystemAgentSecureStorage } from './utils/filesystem-agent-secure-storage';
 
 @Injectable()
-export class DidService {
+export class AgentService {
   private readonly waciProtocolsByType: Map<AgentType, WACIProtocol>;
   constructor() {
     this.waciProtocolsByType = new Map<AgentType, WACIProtocol>([
@@ -112,6 +111,9 @@ export class DidService {
               });
             },
           },
+          storage: new FileSystemStorage({
+            filepath: 'storage/issuer-waci-storage.json',
+          }),
         }),
       ],
       [
@@ -122,6 +124,9 @@ export class DidService {
               return vcs;
             },
           },
+          storage: new FileSystemStorage({
+            filepath: 'storage/holder-waci-storage.json',
+          }),
         }),
       ],
       [
@@ -169,12 +174,15 @@ export class DidService {
               };
             },
           },
+          storage: new FileSystemStorage({
+            filepath: 'storage/verifier-waci-storage.json',
+          }),
         }),
       ],
     ]);
   }
 
-  async create(createDidDto: CreateDidDto): Promise<DID> {
+  async create(createDidDto: CreateAgentDto): Promise<DID> {
     const registry = new AgentModenaUniversalRegistry(
       'http://modena.gcba-extrimian.com:8080',
     );
@@ -191,6 +199,9 @@ export class DidService {
       }),
       agentStorage: new FileSystemStorage({
         filepath: `storage/${createDidDto.agentType}.json`,
+      }),
+      vcStorage: new FileSystemStorage({
+        filepath: `storage/${createDidDto.agentType}_vc.json`,
       }),
     });
 
@@ -239,15 +250,15 @@ export class DidService {
     return `This action returns all did`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} did`;
+  findOne(type: AgentType) {
+    return `This action returns a #${type} did`;
   }
 
-  update(id: number, updateDidDto: UpdateDidDto) {
-    return `This action updates a #${id} did`;
+  update(type: AgentType) {
+    return `This action updates a #${type} did`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} did`;
+  remove(type: AgentType) {
+    return `This action removes a #${type} did`;
   }
 }
