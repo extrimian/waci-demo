@@ -1,34 +1,74 @@
-import { Injectable } from '@nestjs/common';
-import { CreateInvitationDto } from './dto/create-invitation.dto';
-import { CreateRequestDto } from './dto/create-request.dto';
-import { CreateOfferDto } from './dto/create-offer.dto';
-import { CreateProposalDto } from './dto/create-proposal.dto';
-import { CreateCredentialDto } from './dto/create-credential.dto';
+import { Injectable, Logger } from '@nestjs/common';
+import {
+  CreateOobInvitationDto as CreateOobInvitationDto,
+  OobInvitationBody,
+} from './dto/create-oob.dto';
+import { RequestCredentialDto } from './dto/request-credential';
+import { OfferCredentialDto } from './dto/offer-credential.dto';
+import { ProposeCredentialDto } from './dto/propose-credential';
+import { IssueCredentialDto } from './dto/issue-credential';
+import * as UUID from 'uuid';
+import { OobInvitationDto } from './dto/oob.dto';
+
+export enum IssuanceMessageTypes {
+  OutOfBandInvitation = 'https://didcomm.org/out-of-band/2.0/invitation',
+  ProposeCredential = 'https://didcomm.org/issue-credential/3.0/propose-credential',
+  OfferCredential = 'https://didcomm.org/issue-credential/3.0/offer-credential',
+  RequestCredential = 'https://didcomm.org/issue-credential/3.0/request-credential',
+  IssueCredential = 'https://didcomm.org/issue-credential/3.0/issue-credential',
+  IssuanceAck = 'https://didcomm.org/issue-credential/3.0/ack',
+  ProblemReport = 'https://didcomm.org/report-problem/2.0/problem-report',
+}
+
+const createUUID = UUID.v4;
 
 @Injectable()
 export class IssueCredentialService {
-  // Creates a WACI credential: https://identity.foundation/waci-didcomm/#step-5-issue-credential-issue-credential-credential-fulfilment
-  issueCredential(createCredentialDto: CreateCredentialDto) {
-    throw new Error('Method not implemented.');
-  }
+  // Creates a WACI OOB invitation for credential issuance: https://identity.foundation/waci-didcomm/#step-1-generate-out-of-band-oob-message
+  createOobMessage(
+    createOobInvitationDto: CreateOobInvitationDto,
+  ): OobInvitationDto {
+    Logger.log('Creating issuance invitation', 'IssueCredentialService');
+    const SUPPORTED_ALGORITHMS = ['didcomm/v2'];
 
-  // Creates a WACI credential request: https://identity.foundation/waci-didcomm/#step-4-issue-credential-request-credential-credential-application
-  requestCredential(createRequestDto: CreateRequestDto) {
-    throw new Error('Method not implemented.');
-  }
+    const responseBody: OobInvitationBody = {
+      body: {
+        goal_code: createOobInvitationDto.goalCode,
+        accept: SUPPORTED_ALGORITHMS,
+      },
+    };
 
-  // Creates a WACI credential offer: https://identity.foundation/waci-didcomm/#step-3-issue-credential-offer-credential-credential-manifest
-  offerCredential(createOfferDto: CreateOfferDto) {
-    throw new Error('Method not implemented.');
+    return new OobInvitationDto(
+      IssuanceMessageTypes.OutOfBandInvitation,
+      createUUID(),
+      createOobInvitationDto.senderDid,
+      responseBody,
+    );
   }
 
   // Creates a WACI credential proposal: https://identity.foundation/waci-didcomm/#step-2-issue-credential-propose-credential
-  proposeCredential(createProposalDto: CreateProposalDto) {
+  proposeCredential(oobInvitationDto: OobInvitationDto): ProposeCredentialDto {
+    throw new Error('Method not implemented.');
+  }
+  // Creates a WACI credential offer: https://identity.foundation/waci-didcomm/#step-3-issue-credential-offer-credential-credential-manifest
+  offerCredential(
+    proposeCredentialDto: ProposeCredentialDto,
+  ): OfferCredentialDto {
+    throw new Error('Method not implemented.');
+  }
+  // Creates a WACI credential request: https://identity.foundation/waci-didcomm/#step-4-issue-credential-request-credential-credential-application
+  requestCredential(
+    offerCredentialDto: OfferCredentialDto,
+  ): RequestCredentialDto {
+    throw new Error('Method not implemented.');
+  }
+  // Creates a WACI credential: https://identity.foundation/waci-didcomm/#step-5-issue-credential-issue-credential-credential-fulfilment
+  issueCredential(requestCredentialDto: RequestCredentialDto): AckDto {
     throw new Error('Method not implemented.');
   }
 
-  // Creates a WACI OOB invitation for credential issuance: https://identity.foundation/waci-didcomm/#step-1-generate-out-of-band-oob-message
-  createInvitation(createInvitation: CreateInvitationDto) {
+  // Creates a WACI credential acknowledgement: https://identity.foundation/waci-didcomm/#step-6-issue-credential-ack
+  acknowledgeCredential(issueCredentialDto: IssueCredentialDto): AckDto {
     throw new Error('Method not implemented.');
   }
 }
