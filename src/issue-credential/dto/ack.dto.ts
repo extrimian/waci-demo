@@ -3,22 +3,11 @@ import { IssuanceMessageTypes } from '../issue-credential.service';
 import { DID } from '@extrimian/agent';
 
 class AckDto {
-  //    "type":"https://didcomm.org/issue-credential/3.0/ack",
-  //  "id":"d1fb78ad-c452-4c52-a7a0-b68b3e82cdd3",
-  //  "thid":"7f62f655-9cac-4728-854a-775ba6944593",
-  //  "from":"did:example:holder",
-  //  "to":[
-  //     "did:example:issuer"
-  //  ],
-  //  "body":{
-
-  //  }
-
   @ApiProperty({
     type: IssuanceMessageTypes,
     description: 'El tipo de mensaje WACI, en este caso un ACK',
   })
-  type: IssuanceMessageTypes.Ack;
+  type: string;
 
   @ApiProperty({
     type: String,
@@ -54,7 +43,7 @@ class AckDto {
   body: any;
 
   constructor(id: string, thid: string, from: DID, to: Array<DID>, body: any) {
-    this.type = IssuanceMessageTypes.Acknowledgement;
+    this.type = IssuanceMessageTypes.Ack;
     this.id = id;
     this.thid = thid;
     this.from = from;

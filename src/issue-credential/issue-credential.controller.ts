@@ -4,8 +4,6 @@ import {
   Controller,
   Get,
   InternalServerErrorException,
-  Logger,
-  Post,
 } from '@nestjs/common';
 import { IssueCredentialService } from './issue-credential.service';
 import { CreateOobInvitationDto, WaciGoalCodes } from './dto/create-oob.dto';
