@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   InternalServerErrorException,
   Logger,
   Post,
@@ -16,9 +17,10 @@ import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 import { OobInvitationDto } from './dto/oob.dto';
-
+@ApiTags('Credential issuance')
 @Controller('issue-credential')
 export class IssueCredentialController {
   constructor(

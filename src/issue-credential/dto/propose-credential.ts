@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IssuanceMessageTypes } from '../issue-credential.service';
 import { DID } from '@extrimian/agent';
+import { IssuanceMessageTypes } from '../issue-credential.service';
 
 export class ProposeCredentialDto {
   @ApiProperty({
-    type: IssuanceMessageTypes,
+    type: IssuanceMessageTypes.ProposeCredential,
     description: 'El tipo de mensaje WACI',
     example: IssuanceMessageTypes.ProposeCredential,
   })
-  type: IssuanceMessageTypes;
+  type: string;
 
   @ApiProperty({
     type: String,
@@ -33,7 +33,7 @@ export class ProposeCredentialDto {
   @ApiProperty({
     type: Array<DID>,
     description: 'El DID de los issuers',
-    example: 'did:quarkid:matic:issuer',
+    examples: ['did:quarkid:matic:issuer'],
   })
   to: Array<DID>;
 }
