@@ -3,213 +3,57 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { AgentType, CreateAgentDto } from './dto/create-agent.dto';
 import {
   Agent,
   AgentModenaUniversalRegistry,
   AgentModenaUniversalResolver,
   DID,
-  VerifiableCredential,
-  WACICredentialOfferSucceded,
-  WACIProtocol,
 } from '@extrimian/agent';
 import { FileSystemStorage } from './utils/filesystem-storage';
 import { FileSystemAgentSecureStorage } from './utils/filesystem-agent-secure-storage';
+import {
+  AgentType,
+  AgentTypes,
+  waciProtocolsByType,
+} from './utils/agent-types';
 
 @Injectable()
 export class AgentService {
-  private readonly waciProtocolsByType: Map<AgentType, WACIProtocol>;
-  constructor() {
-    this.waciProtocolsByType = new Map<AgentType, WACIProtocol>([
-      [
-        'issuer',
-        new WACIProtocol({
-          issuer: {
-            issueCredentials: async (
-              waciInvitationId: string,
-              holderId: string,
-            ) => {
-              return new WACICredentialOfferSucceded({
-                credentials: [
-                  {
-                    credential: {
-                      '@context': [
-                        'https://www.w3.org/2018/credentials/v1',
-                        'https://www.w3.org/2018/credentials/examples/v1',
-                        'https://w3id.org/security/bbs/v1',
-                      ],
-                      id: 'http://example.edu/credentials/58473',
-                      type: ['VerifiableCredential', 'AlumniCredential'],
-                      issuer:
-                        'did:quarkid:starknet:EiCIBfgaePl4ESOOD-00GU8EAJSgwse1JDDIHYRz4aOtww',
-                      issuanceDate: new Date(),
-                      credentialSubject: {
-                        id: holderId,
-                        givenName: 'John',
-                        familyName: 'Doe',
-                      },
-                    },
-                    outputDescriptor: {
-                      id: 'alumni_credential_output',
-                      schema:
-                        'https://schema.org/EducationalOccupationalCredential',
-                      display: {
-                        title: {
-                          path: ['$.name', '$.vc.name'],
-                          fallback: 'Alumni Credential',
-                        },
-                        subtitle: {
-                          path: ['$.class', '$.vc.class'],
-                          fallback: 'Alumni',
-                        },
-                        description: {
-                          text: 'Credencial que permite validar que es alumno del establecimiento',
-                        },
-                      },
-                      styles: {
-                        background: {
-                          color: '#ff0000',
-                        },
-                        thumbnail: {
-                          uri: 'https://dol.wa.com/logo.png',
-                          alt: 'Universidad Nacional',
-                        },
-                        hero: {
-                          uri: 'https://dol.wa.com/alumnos.png',
-                          alt: 'Alumnos de la universidad',
-                        },
-                        text: {
-                          color: '#d4d400',
-                        },
-                      },
-                    },
-                  },
-                ],
-                issuer: {
-                  name: 'Universidad Nacional',
-                  styles: {
-                    thumbnail: {
-                      uri: 'https://dol.wa.com/logo.png',
-                      alt: 'Universidad Nacional',
-                    },
-                    hero: {
-                      uri: 'https://dol.wa.com/alumnos.png',
-                      alt: 'Alumnos de la universidad',
-                    },
-                    background: {
-                      color: '#ff0000',
-                    },
-                    text: {
-                      color: '#d4d400',
-                    },
-                  },
-                },
-                options: {
-                  challenge: '508adef4-b8e0-4edf-a53d-a260371c1423',
-                  domain: '9rf25a28rs96',
-                },
-              });
-            },
-          },
-          storage: new FileSystemStorage({
-            filepath: 'storage/issuer-waci-storage.json',
-          }),
-        }),
-      ],
-      [
-        'holder',
-        new WACIProtocol({
-          holder: {
-            selectVcToPresent: async (vcs: VerifiableCredential[]) => {
-              return vcs;
-            },
-          },
-          storage: new FileSystemStorage({
-            filepath: 'storage/holder-waci-storage.json',
-          }),
-        }),
-      ],
-      [
-        'verifier',
-        new WACIProtocol({
-          verifier: {
-            presentationDefinition: async (invitationId: string) => {
-              return {
-                frame: {
-                  '@context': [
-                    'https://www.w3.org/2018/credentials/v1',
-                    'https://www.w3.org/2018/credentials/examples/v1',
-                    'https://w3id.org/security/bbs/v1',
-                  ],
-                  type: ['VerifiableCredential', 'AlumniCredential'],
-                  credentialSubject: {
-                    '@explicit': true,
-                    type: ['AlumniCredential'],
-                    givenName: {},
-                    familyName: {},
-                  },
-                },
-                inputDescriptors: [
-                  {
-                    id: 'Alumni Credential',
-                    name: 'AlumniCredential',
-                    constraints: {
-                      fields: [
-                        {
-                          path: ['$.credentialSubject.givenName'],
-                          filter: {
-                            type: 'string',
-                          },
-                        },
-                        {
-                          path: ['$.credentialSubject.familyName'],
-                          filter: {
-                            type: 'string',
-                          },
-                        },
-                      ],
-                    },
-                  },
-                ],
-              };
-            },
-          },
-          storage: new FileSystemStorage({
-            filepath: 'storage/verifier-waci-storage.json',
-          }),
-        }),
-      ],
-    ]);
-  }
-
-  async create(createDidDto: CreateAgentDto): Promise<DID> {
+  // Creates an agent for each type and returns their DIDDocuments in a map
+  async create() {
     const modenaUrl = 'http://modena.gcba-extrimian.com:8080';
     const didMethod = 'did:quarkid:matic';
 
-    const agent = new Agent({
-      didDocumentRegistry: new AgentModenaUniversalRegistry(
-        modenaUrl,
-        didMethod,
-      ),
-      didDocumentResolver: new AgentModenaUniversalResolver(
-        'http://modena.gcba-extrimian.com:8080',
-      ),
-      vcProtocols: [this.waciProtocolsByType.get(createDidDto.agentType)],
-      secureStorage: new FileSystemAgentSecureStorage({
-        filepath: `storage/${createDidDto.agentType}_secure.json`,
-      }),
-      agentStorage: new FileSystemStorage({
-        filepath: `storage/${createDidDto.agentType}.json`,
-      }),
-      vcStorage: new FileSystemStorage({
-        filepath: `storage/${createDidDto.agentType}_vc.json`,
-      }),
+    const agentsMap = new Map<AgentType, Agent>();
+    Object.values(AgentTypes).forEach((agentType) => {
+      const agent = new Agent({
+        didDocumentRegistry: new AgentModenaUniversalRegistry(
+          modenaUrl,
+          didMethod,
+        ),
+        didDocumentResolver: new AgentModenaUniversalResolver(
+          'http://modena.gcba-extrimian.com:8080',
+        ),
+        vcProtocols: [waciProtocolsByType.get(agentType)],
+        secureStorage: new FileSystemAgentSecureStorage({
+          filepath: `storage/${agentType}_secure.json`,
+        }),
+        agentStorage: new FileSystemStorage({
+          filepath: `storage/${agentType}.json`,
+        }),
+        vcStorage: new FileSystemStorage({
+          filepath: `storage/${agentType}_vc.json`,
+        }),
+      });
+      agentsMap.set(agentType, agent);
     });
 
     // Initialize the agent, loading and configuring internal classes
-    agent.initialize();
+    agentsMap.forEach((agent) => {
+      agent.initialize();
+    });
 
-    Logger.log('Waiting for agent to be ready', 'DidService');
+    Logger.log('Waiting for agents to be ready', 'AgentService');
     const wait = async () =>
       new Promise<void>((resolve) => {
         setTimeout(() => {
@@ -219,39 +63,45 @@ export class AgentService {
     await wait();
 
     // Lauch creation operation
-    // Logger.log('Launching DID creation', 'DidService');
-    // let agentDid: DID;
-    // await agent.identity.createNewDID({
-    //   dwnUrl: 'http://ssi.gcba-extrimian.com:1337/',
-    // });
+    Logger.log('Launching DID creation', 'AgentService');
+    agentsMap.forEach(async (agent) => {
+      await agent.identity.createNewDID({
+        dwnUrl: 'http://ssi.gcba-extrimian.com:1337/',
+      });
+    });
 
-    // Wait for DID creation
-    // Logger.log('Waiting for DID creation', 'DidService');
-    // agent.identity.didCreated.on(async (args) => {
-    //   if (!args) {
-    //     Logger.log('Error creating DID', 'DidService');
-    //     throw new InternalServerErrorException('Error creating DID');
-    //   }
-    //   agentDid = args.did;
-    // });
+    // Listen for DID creation
+    const didMap = new Map<AgentType, DID>();
+    Logger.log('Waiting for DID creation', 'AgentService');
+    agentsMap.forEach((agent, type) => {
+      agent.identity.didCreated.on(async (args) => {
+        if (!args) {
+          Logger.log('Error creating DID', 'AgentService');
+          throw new InternalServerErrorException('Error creating DID');
+        }
+        didMap.set(type, args.did);
+      });
+    });
 
     // Poll until all DIDs are created
-    // return new Promise((resolve) => {
-    //   const interval = setInterval(() => {
-    //     if (agentDid) {
-    //       clearInterval(interval);
-    //       Logger.log(`DID created: ${agentDid.value}`, 'DidService');
-    //       resolve(agentDid);
-    //     }
-    //   }, 1000);
-    // });
-    return new Promise((resolve) => {
-      resolve(
-        DID.from(
-          'did:quarkid:matic:0x5b0e5f7b2f1b8c7c3d3e8b3f1a1b6c0a2d2d9e9f',
-        ),
-      );
+    await new Promise((resolve) => {
+      const interval = setInterval(() => {
+        if (didMap.size === Object.values(AgentTypes).length) {
+          clearInterval(interval);
+          Logger.log('All DIDs created', 'AgentService');
+        }
+      }, 1000);
     });
+
+    // Resolve DID Documents
+    Logger.log('Resolving DID Documents', 'AgentService');
+    const didDocumentMap = new Map<AgentType, any>();
+    didMap.forEach(async (did, type) => {
+      const didDocument = await agentsMap.get(type).resolver.resolve(did);
+      didDocumentMap.set(type, didDocument);
+    });
+
+    return didDocumentMap;
   }
 
   findAll() {

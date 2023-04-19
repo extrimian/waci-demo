@@ -2,44 +2,34 @@ import {
   Controller,
   Get,
   Post,
-  Body,
   Param,
   Delete,
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { AgentService } from './agent.service';
-import { AgentType, AgentTypes, CreateAgentDto } from './dto/create-agent.dto';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { AgentType, AgentTypes } from './utils/agent-types';
 
 @ApiTags('Agent Management')
-@Controller('agent')
+@Controller('agents')
 export class AgentController {
   constructor(private readonly agentService: AgentService) {}
 
   @Post()
   @ApiBadRequestResponse({ description: 'El tipo de agente es inválido' })
   @ApiInternalServerErrorResponse({
-    description: 'Ocurrió un error inesperado creando el DID',
+    description: 'Ocurrió un error inesperado creando el agente',
   })
-  @ApiCreatedResponse({ description: 'El DID fue creado exitosamente' })
-  async create(@Body() createAgentDto: CreateAgentDto) {
-    if (createAgentDto.agentType && !AgentTypes[createAgentDto.agentType])
-      throw new BadRequestException(
-        `El tipo de agente ${
-          createAgentDto.agentType
-        } es inválido. Usar alguno de los siguientes: ${Object.values(
-          AgentTypes,
-        ).join(', ')}`,
-      );
+  @ApiCreatedResponse({ description: 'El agente fue creado exitosamente' })
+  async create() {
     try {
-      const agentDid = await this.agentService.create(createAgentDto);
-      return { did: agentDid };
+      return await this.agentService.create();
     } catch (error) {
       throw new InternalServerErrorException(
         'Ocurrió un error inseperado creando el DID',
