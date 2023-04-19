@@ -2,8 +2,8 @@ import {
   BadRequestException,
   Body,
   Controller,
-  Get,
   InternalServerErrorException,
+  Post,
 } from '@nestjs/common';
 import { IssueCredentialService } from './issue-credential.service';
 import { CreateOobInvitationDto, WaciGoalCodes } from './dto/create-oob.dto';
@@ -25,7 +25,7 @@ export class IssueCredentialController {
     private readonly issueCredentialService: IssueCredentialService,
   ) {}
 
-  @Get('invitation')
+  @Post('invitation')
   @ApiBadRequestResponse({ description: 'El tipo de invitación es inválido' })
   @ApiInternalServerErrorResponse({
     description: 'Ocurrió un error inesperado creando la invitación',
@@ -46,29 +46,29 @@ export class IssueCredentialController {
   }
 
   // After receiving the invitation, the holder will create a credential proposal to send back to the issuer
-  @Get('proposal')
+  @Post('proposal')
   async getProposal(@Body() oobInvitationDto: OobInvitationDto) {
     this.issueCredentialService.proposeCredential(oobInvitationDto);
   }
 
   // After receiving the proposal, the issuer will create a credential offer to send back to the holder
-  @Get('offer')
+  @Post('offer')
   async offerCredential(@Body() proposeCredentialDto: ProposeCredentialDto) {
     this.issueCredentialService.offerCredential(proposeCredentialDto);
   }
 
   // After receiving the offer, the holder will create a credential request to send back to the issuer
-  @Get('request')
+  @Post('request')
   async getRequest(@Body() offerCredentialDto: OfferCredentialDto) {
     this.issueCredentialService.requestCredential(offerCredentialDto);
   }
 
-  @Get('credential')
+  @Post('credential')
   async issueCredential(@Body() requestCredentialDto: RequestCredentialDto) {
     this.issueCredentialService.issueCredential(requestCredentialDto);
   }
 
-  @Get('ack')
+  @Post('ack')
   async acknowledgeCredential(@Body() issueCredentialDto: IssueCredentialDto) {
     this.issueCredentialService.acknowledgeCredential(issueCredentialDto);
   }

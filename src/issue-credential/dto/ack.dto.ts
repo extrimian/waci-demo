@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IssuanceMessageTypes } from '../issue-credential.service';
 import { DID } from '@extrimian/agent';
+import { IssuanceMessageTypes } from '../utils/issuance-utils';
 
 class AckDto {
   @ApiProperty({
-    type: IssuanceMessageTypes,
+    type: String,
     description: 'El tipo de mensaje WACI, en este caso un ACK',
+    example: IssuanceMessageTypes.Ack,
   })
   type: string;
 

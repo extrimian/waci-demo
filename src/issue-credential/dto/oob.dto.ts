@@ -1,13 +1,13 @@
 import { DID } from '@extrimian/agent';
 import { OobInvitationBody } from './create-oob.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { IssuanceMessageTypes } from '../issue-credential.service';
+import { IssuanceMessageTypes } from '../utils/issuance-utils';
 
-// We need this to trigger
 export class OobInvitationDto {
   @ApiProperty({
-    type: IssuanceMessageTypes,
+    type: String,
     description: 'El tipo de mensaje WACI, en este caso una invitación',
+    example: IssuanceMessageTypes.OobInvitation,
   })
   type: string;
 
@@ -31,7 +31,7 @@ export class OobInvitationDto {
   body: OobInvitationBody;
 
   constructor(id: string, from: DID, body: OobInvitationBody) {
-    this.type = IssuanceMessageTypes.OutOfBandInvitation;
+    this.type = IssuanceMessageTypes.OobInvitation;
     this.id = id;
     this.from = from;
     this.body = body;

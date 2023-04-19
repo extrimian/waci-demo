@@ -12,19 +12,8 @@ import { OobInvitationDto } from './dto/oob.dto';
 
 const createUUID = UUID.v4;
 
-export enum IssuanceMessageTypes {
-  OutOfBandInvitation = 'https://didcomm.org/out-of-band/2.0/invitation',
-  ProposeCredential = 'https://didcomm.org/issue-credential/3.0/propose-credential',
-  OfferCredential = 'https://didcomm.org/issue-credential/3.0/offer-credential',
-  RequestCredential = 'https://didcomm.org/issue-credential/3.0/request-credential',
-  IssueCredential = 'https://didcomm.org/issue-credential/3.0/issue-credential',
-  Ack = 'https://didcomm.org/issue-credential/3.0/ack',
-  ProblemReport = 'https://didcomm.org/report-problem/2.0/problem-report',
-}
-
 @Injectable()
 export class IssueCredentialService {
-  static IssuanceMessageTypes = IssuanceMessageTypes;
   // Creates a WACI OOB invitation for credential issuance: https://identity.foundation/waci-didcomm/#step-1-generate-out-of-band-oob-message
   createOobMessage(
     createOobInvitationDto: CreateOobInvitationDto,
