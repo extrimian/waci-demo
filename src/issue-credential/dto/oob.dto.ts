@@ -30,8 +30,8 @@ export class OobInvitationDto {
   })
   body: OobInvitationBody;
 
-  constructor(type: string, id: string, from: DID, body: OobInvitationBody) {
-    this.type = type;
+  constructor(id: string, from: DID, body: OobInvitationBody) {
+    this.type = IssuanceMessageTypes.OutOfBandInvitation;
     this.id = id;
     this.from = from;
     this.body = body;

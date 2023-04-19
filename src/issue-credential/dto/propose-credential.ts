@@ -36,4 +36,12 @@ export class ProposeCredentialDto {
     examples: ['did:quarkid:matic:issuer'],
   })
   to: Array<DID>;
+
+  constructor(id: string, pthid: string, from: DID, to: Array<DID>) {
+    this.type = IssuanceMessageTypes.ProposeCredential;
+    this.id = id;
+    this.pthid = pthid;
+    this.from = from;
+    this.to = to;
+  }
 }
