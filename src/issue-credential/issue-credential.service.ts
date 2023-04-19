@@ -63,12 +63,12 @@ export class IssueCredentialService {
     throw new Error('Method not implemented.');
   }
   // Creates a WACI credential: https://identity.foundation/waci-didcomm/#step-5-issue-credential-issue-credential-credential-fulfilment
-  issueCredential(requestCredentialDto: RequestCredentialDto): AckDto {
+  issueCredential(requestCredentialDto: RequestCredentialDto) {
     throw new Error('Method not implemented.');
   }
 
   // Creates a WACI credential acknowledgement: https://identity.foundation/waci-didcomm/#step-6-issue-credential-ack
-  acknowledgeCredential(issueCredentialDto: IssueCredentialDto): AckDto {
+  acknowledgeCredential(issueCredentialDto: IssueCredentialDto) {
     throw new Error('Method not implemented.');
   }
 }

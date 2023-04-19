@@ -27,7 +27,7 @@ export class IssueCredentialController {
     private readonly issueCredentialService: IssueCredentialService,
   ) {}
 
-  @Post('invitation')
+  @Get('invitation')
   @ApiBadRequestResponse({ description: 'El tipo de invitación es inválido' })
   @ApiInternalServerErrorResponse({
     description: 'Ocurrió un error inesperado creando la invitación',
@@ -47,27 +47,30 @@ export class IssueCredentialController {
     }
   }
 
-  @Post('proposal')
-  async proposeCredential(@Body() oobInvitationDto: OobInvitationDto) {
+  // After receiving the invitation, the holder will create a credential proposal to send back to the issuer
+  @Get('proposal')
+  async getProposal(@Body() oobInvitationDto: OobInvitationDto) {
     this.issueCredentialService.proposeCredential(oobInvitationDto);
   }
 
-  @Post('offer')
+  // After receiving the proposal, the issuer will create a credential offer to send back to the holder
+  @Get('offer')
   async offerCredential(@Body() proposeCredentialDto: ProposeCredentialDto) {
     this.issueCredentialService.offerCredential(proposeCredentialDto);
   }
 
-  @Post('request')
-  async requestCredential(@Body() offerCredentialDto: OfferCredentialDto) {
+  // After receiving the offer, the holder will create a credential request to send back to the issuer
+  @Get('request')
+  async getRequest(@Body() offerCredentialDto: OfferCredentialDto) {
     this.issueCredentialService.requestCredential(offerCredentialDto);
   }
 
-  @Post('credential')
+  @Get('credential')
   async issueCredential(@Body() requestCredentialDto: RequestCredentialDto) {
     this.issueCredentialService.issueCredential(requestCredentialDto);
   }
 
-  @Post('ack')
+  @Get('ack')
   async acknowledgeCredential(@Body() issueCredentialDto: IssueCredentialDto) {
     this.issueCredentialService.acknowledgeCredential(issueCredentialDto);
   }
