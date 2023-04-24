@@ -3,6 +3,7 @@ import { AgentService } from './agent.service';
 import { AgentController } from './agent.controller';
 
 @Module({
+  exports: [AgentService],
   controllers: [AgentController],
   providers: [AgentService],
 })

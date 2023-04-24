@@ -8,6 +8,8 @@ import {
   InternalServerErrorException,
   Body,
   Logger,
+  Query,
+  HttpStatus,
 } from '@nestjs/common';
 import { AgentService } from './agent.service';
 import {
@@ -35,7 +37,7 @@ function validateAgentTypes(types: AgentType[]) {
 export class AgentController {
   constructor(private readonly agentService: AgentService) {}
 
-  @Post(':types')
+  @Post()
   @ApiBadRequestResponse({ description: 'El tipo de agente es inválido' })
   @ApiInternalServerErrorResponse({
     description: 'Ocurrió un error inesperado creando los agentes',
@@ -56,22 +58,28 @@ export class AgentController {
     }
   }
 
+  @Get(':type')
+  async findByType(@Param('type') type: AgentType) {
+    validateAgentTypes([type]);
+
+    return this.agentService.findByType(type);
+  }
+
   @Get()
-  findAll() {
-    return this.agentService.findAll();
+  async findAll() {
+    const resolvedAgents = await this.agentService.findAll();
+
+    return resolvedAgents;
   }
-
-  @Get(':types')
-  async findByType(@Param('types') types: AgentType[]) {
-    validateAgentTypes(types);
-
-    return this.agentService.findByType(types);
-  }
-
   @Delete(':type')
   async remove(@Param('type') type: AgentType) {
     validateAgentTypes([type]);
 
     await this.agentService.remove(type);
+  }
+
+  @Delete()
+  async removeAll() {
+    await this.agentService.removeAll();
   }
 }
