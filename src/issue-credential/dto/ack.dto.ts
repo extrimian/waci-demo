@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DID } from '@extrimian/agent';
-import { IssuanceMessageTypes } from '../utils/issuance-utils';
+import { WaciMessageTypes } from '../utils/issuance-utils';
 
 class AckDto {
   @ApiProperty({
     type: String,
     description: 'El tipo de mensaje WACI, en este caso un ACK',
-    example: IssuanceMessageTypes.Ack,
+    example: WaciMessageTypes.Ack,
   })
   type: string;
 
@@ -44,7 +44,7 @@ class AckDto {
   body: any;
 
   constructor(id: string, thid: string, from: DID, to: Array<DID>, body: any) {
-    this.type = IssuanceMessageTypes.Ack;
+    this.type = WaciMessageTypes.Ack;
     this.id = id;
     this.thid = thid;
     this.from = from;

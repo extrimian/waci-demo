@@ -1,12 +1,12 @@
 import { DID } from '@extrimian/agent';
 import { ApiProperty } from '@nestjs/swagger';
-import { IssuanceMessageTypes } from '../utils/issuance-utils';
+import { WaciMessageTypes } from '../utils/issuance-utils';
 export class ProposeCredentialDto {
   @ApiProperty({
     type: String,
     description:
       'El tipo de mensaje WACI, en este caso una propuesta de credencial',
-    example: IssuanceMessageTypes.ProposeCredential,
+    example: WaciMessageTypes.ProposeCredential,
   })
   type: string;
 
@@ -38,7 +38,7 @@ export class ProposeCredentialDto {
   to: Array<DID>;
 
   constructor(id: string, pthid: string, from: DID, to: Array<DID>) {
-    this.type = IssuanceMessageTypes.ProposeCredential;
+    this.type = WaciMessageTypes.ProposeCredential;
     this.id = id;
     this.pthid = pthid;
     this.from = from;

@@ -5,8 +5,7 @@ import {
   InternalServerErrorException,
   Post,
 } from '@nestjs/common';
-import { IssueCredentialService } from './issue-credential.service';
-import { CreateOobInvitationDto, WaciGoalCodes } from './dto/create-oob.dto';
+import { IssuanceService } from './issuance.service';
 import { ProposeCredentialDto } from './dto/propose-credential';
 import { OfferCredentialDto } from './dto/offer-credential.dto';
 import { RequestCredentialDto } from './dto/request-credential';
@@ -18,12 +17,12 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { OobInvitationDto } from './dto/oob.dto';
+import { CreateOobInvitationDto } from './dto/create-oob.dto';
+import { WaciGoalCodes } from './utils/issuance-utils';
 @ApiTags('Credential issuance')
 @Controller('issue-credential')
-export class IssueCredentialController {
-  constructor(
-    private readonly issueCredentialService: IssueCredentialService,
-  ) {}
+export class IssuanceController {
+  constructor(private readonly issuanceService: IssuanceService) {}
 
   @Post('invitation')
   @ApiBadRequestResponse({ description: 'El tipo de invitación es inválido' })
@@ -39,7 +38,7 @@ export class IssueCredentialController {
       throw new BadRequestException('Goal code not supported');
     }
     try {
-      return this.issueCredentialService.createOobMessage(createOobMessageDto);
+      return this.issuanceService.createOobMessage(createOobMessageDto);
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -48,28 +47,28 @@ export class IssueCredentialController {
   // After receiving the invitation, the holder will create a credential proposal to send back to the issuer
   @Post('proposal')
   async getProposal(@Body() oobInvitationDto: OobInvitationDto) {
-    this.issueCredentialService.proposeCredential(oobInvitationDto);
+    return this.issuanceService.proposeCredential(oobInvitationDto);
   }
 
   // After receiving the proposal, the issuer will create a credential offer to send back to the holder
   @Post('offer')
   async offerCredential(@Body() proposeCredentialDto: ProposeCredentialDto) {
-    this.issueCredentialService.offerCredential(proposeCredentialDto);
+    this.issuanceService.offerCredential(proposeCredentialDto);
   }
 
   // After receiving the offer, the holder will create a credential request to send back to the issuer
   @Post('request')
   async getRequest(@Body() offerCredentialDto: OfferCredentialDto) {
-    this.issueCredentialService.requestCredential(offerCredentialDto);
+    this.issuanceService.requestCredential(offerCredentialDto);
   }
 
   @Post('credential')
   async issueCredential(@Body() requestCredentialDto: RequestCredentialDto) {
-    this.issueCredentialService.issueCredential(requestCredentialDto);
+    this.issuanceService.issueCredential(requestCredentialDto);
   }
 
   @Post('ack')
   async acknowledgeCredential(@Body() issueCredentialDto: IssueCredentialDto) {
-    this.issueCredentialService.acknowledgeCredential(issueCredentialDto);
+    this.issuanceService.acknowledgeCredential(issueCredentialDto);
   }
 }

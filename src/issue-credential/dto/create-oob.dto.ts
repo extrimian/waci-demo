@@ -1,17 +1,11 @@
 import { DID } from '@extrimian/agent';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-
-export enum WaciGoalCodes {
-  Issuance = 'streamlined-vc',
-  Presentation = 'streamlined-vp',
-}
+import { WaciGoalCodes } from '../utils/issuance-utils';
 
 export interface OobInvitationBody {
-  body: {
-    goal_code: WaciGoalCodes.Issuance;
-    accept: string[];
-    [key: string]: any;
-  };
+  goal_code: WaciGoalCodes.Issuance;
+  accept: string[];
+  [key: string]: any;
 }
 export class CreateOobInvitationDto {
   @ApiProperty({

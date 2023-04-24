@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AgentModule } from './agent/agent.module';
-import { IssueCredentialModule } from './issue-credential/issue-credential.module';
+import { IssuanceModule } from './issue-credential/issuance.module';
 
 @Module({
-  imports: [AgentModule, IssueCredentialModule],
+  imports: [AgentModule, IssuanceModule],
   controllers: [AppController],
   providers: [AppService],
 })
