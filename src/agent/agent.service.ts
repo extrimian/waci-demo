@@ -56,7 +56,7 @@ export class AgentService {
   // Creates an agent for each type and returns their DIDDocuments in a map
   async create(agentTypes: AgentType[]) {
     const agentInfoArray = await this.initializeAgents(agentTypes);
-    Logger.log('Agents initialized', 'AgentService');
+
     const resolvedAgents = await this.resolveAgents(agentInfoArray);
 
     return resolvedAgents;
@@ -163,9 +163,9 @@ export class AgentService {
       };
     });
 
-    await this.registerAgents(agentInfoArray);
+    const registeredAgents = await this.registerAgents(agentInfoArray);
 
-    return agentInfoArray;
+    return registeredAgents;
   }
 
   async registerAgents(agentInfoArray: AgentInfo[]): Promise<AgentInfo[]> {
@@ -179,13 +179,13 @@ export class AgentService {
     const registeredAgents: AgentInfo[] = [];
     const unregisteredAgents: AgentInfo[] = [];
     agentInfoArray.filter((agentInfo) => {
-      const did = agentInfo.agent.identity.getOperationalDID();
-      if (!did) {
+      const agentDid = agentInfo.agent.identity.getOperationalDID();
+      if (!agentDid) {
         unregisteredAgents.push(agentInfo);
       } else {
-        registeredAgents.push({ ...agentInfo, did: did });
+        registeredAgents.push({ ...agentInfo, did: agentDid });
         Logger.debug(
-          `Agent ${agentInfo.agentType} already has a DID`,
+          `Agent ${agentInfo.agentType} already has a DID: ${agentDid.value}`,
           'AgentService',
         );
       }
@@ -222,16 +222,16 @@ export class AgentService {
     // Wait for all Promises to resolve
     // DID creation aparently needs not be awaited, but the listeners do
     // await Promise.all(didCreationPromises);
-    const didArray = (await Promise.all(didCreationListeners)) as DID[];
-
-    // Join newly registered agents with the ones that already had a DID
-    didArray.forEach((did, index) => {
-      Logger.debug(
-        `DID created for agent ${unregisteredAgents[index].agentType}`,
-        'AgentService',
-      );
-      registeredAgents.push({ ...unregisteredAgents[index], did: did });
-    });
+    try {
+      const didArray = (await Promise.all(didCreationListeners)) as DID[];
+      // Join newly registered agents with the ones that already had a DID
+      didArray.forEach((agentDid, index) => {
+        registeredAgents.push({ ...unregisteredAgents[index], did: agentDid });
+      });
+    } catch (err) {
+      Logger.error(`Error creating DID: ${err}`, 'AgentService');
+      throw new InternalServerErrorException('Error creating DID');
+    }
 
     return registeredAgents;
   }
@@ -240,10 +240,9 @@ export class AgentService {
     agentInfoArray: AgentInfo[],
   ): Promise<DidDocumentByType[]> {
     // Only resolve agents that have a DID
-    const registeredAgents = agentInfoArray.filter((agentInfo) => {
-      return agentInfo.did;
-    });
-
+    const registeredAgents = agentInfoArray.filter(
+      (agentInfo) => agentInfo.agent.identity.initialized && agentInfo.did,
+    );
     // Resolve DID Documents
     const promises = registeredAgents.map((agentInfo) => {
       return agentInfo.agent.resolver.resolve(agentInfo.did);
@@ -252,10 +251,6 @@ export class AgentService {
     // Wait for DID resolution
     const didDocuments = await Promise.all(promises);
     const didDocumentsByType = didDocuments.map((didDocument, index) => {
-      Logger.debug(
-        `DID Document resolved for agent ${registeredAgents[index].agentType}`,
-        'AgentService',
-      );
       return {
         agentType: registeredAgents[index].agentType,
         didDocument: didDocument,
