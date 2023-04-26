@@ -14,7 +14,7 @@ import { OobInvitationDto } from './dto/oob.dto';
 import { CreateOobInvitationDto } from './dto/create-oob.dto';
 import { WaciGoalCodes } from './utils/issuance-utils';
 @ApiTags('Credential issuance')
-@Controller('issue-credential')
+@Controller('issuance')
 export class IssuanceController {
   constructor(private readonly issuanceService: IssuanceService) {}
 

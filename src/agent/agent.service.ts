@@ -8,7 +8,6 @@ import {
   Agent,
   AgentModenaUniversalRegistry,
   AgentModenaUniversalResolver,
-  DID,
 } from '@extrimian/agent';
 import { FileSystemStorage } from './utils/filesystem-storage';
 import { FileSystemAgentSecureStorage } from './utils/filesystem-agent-secure-storage';
@@ -20,24 +19,24 @@ import {
 import * as fs from 'fs';
 import { glob } from 'glob';
 import { DWNDebugTransport } from './utils/debug-transport';
+import config from 'src/config';
 
-type AgentInfo = {
+export type AgentInfo = {
   agentType: AgentType;
   agent: Agent;
 };
 
-type DidDocumentByType = {
+export type DidDocumentByType = {
   agentType: AgentType;
   didDocument: any;
 };
 
 @Injectable()
 export class AgentService {
-  modenaUrl = 'http://modena.gcba-extrimian.com:8080';
-  didMethod = 'did:quarkid:matic';
-  dwnUrl =
-    'https://dwm--ktdhk0c.bravegrass-b137de87.westus2.azurecontainerapps.io:1337';
-  storagePath = 'storage';
+  modenaUrl = config.modenaUrl;
+  didMethod = config.didMethod;
+  dwnUrl = config.dwnUrl;
+  storagePath = config.storagePath;
 
   async isAgentPresent(type: AgentType) {
     const files = await glob(`${this.storagePath}/${type}*`);

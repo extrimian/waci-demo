@@ -26,6 +26,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/swagger": "^6.3.0",
+    "dotenv": "^16.0.3",
     "fs": "^0.0.1-security",
     "glob": "^10.2.1",
     "reflect-metadata": "^0.1.13",

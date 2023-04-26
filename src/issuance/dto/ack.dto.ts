@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DID } from '@extrimian/agent';
 import { WaciMessageTypes } from '../utils/issuance-utils';
 
-class AckDto {
+export class AckDto {
   @ApiProperty({
     type: String,
     description: 'El tipo de mensaje WACI, en este caso un ACK',
