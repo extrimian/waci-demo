@@ -81,7 +81,7 @@ export class IssuanceService {
       },
     ]);
 
-    const invitation = await issuerInfo[0].agent.vc.createInvitationMessage({
+    const invitation = await issuerInfo.agent.vc.createInvitationMessage({
       flow: CredentialFlow.Issuance,
     });
 
@@ -98,28 +98,28 @@ export class IssuanceService {
     ]);
 
     // Issue VC using agent SDK and store it in memory
-    await holderInfo.agent.vc.processMessage({
-      message: OobInvitationDto.toInvitationMessage(oobInvitationDto),
-    });
+    // await holderInfo.agent.vc.processMessage({
+    //   message: OobInvitationDto.toInvitationMessage(oobInvitationDto),
+    // });
 
-    await new Promise((resolve) => {
-      holderInfo.agent.vc.credentialArrived.on((vc) => {
-        if (vc) {
-          holderInfo.agent.vc.saveCredential(vc);
-          Logger.log(
-            'Credential arrived in holder agent',
-            'IssueCredentialService',
-          );
-          resolve(0);
-        } else {
-          Logger.error(
-            "Credential didn't arrive in holder agent",
-            'IssueCredentialService',
-          );
-          resolve(1);
-        }
-      });
-    });
+    // await new Promise((resolve) => {
+    //   holderInfo.agent.vc.credentialArrived.on((vc) => {
+    //     if (vc) {
+    //       holderInfo.agent.vc.saveCredential(vc);
+    //       Logger.log(
+    //         'Credential arrived in holder agent',
+    //         'IssueCredentialService',
+    //       );
+    //       resolve(0);
+    //     } else {
+    //       Logger.error(
+    //         "Credential didn't arrive in holder agent",
+    //         'IssueCredentialService',
+    //       );
+    //       resolve(1);
+    //     }
+    //   });
+    // });
 
     // Get the credential proposal from the issuer agent's WACI storage
     const credentialProposal: ProposeCredentialDto =
@@ -129,7 +129,7 @@ export class IssuanceService {
         oobInvitationDto.id,
       );
     Logger.debug(
-      `Credential proposal found ${credentialProposal}`,
+      `Credential proposal found ${JSON.stringify(credentialProposal)}`,
       'IssueCredentialService',
     );
     return credentialProposal;
@@ -230,22 +230,12 @@ export class IssuanceService {
     agentType: AgentTypes,
     messageType: WaciMessageTypes,
     threadId: string,
-  ) {
+  ): Promise<any> {
     const filePath = `${this.agentService.storagePath}/${agentType}-waci-storage.json`;
-
+    let waciStorage;
     try {
       const fileContent = await fs.promises.readFile(filePath, 'utf-8');
-      const jsonData = JSON.parse(fileContent);
-      // Get the matching message and remove nulls
-      const result = Object.values(jsonData)
-        .flatMap((thread: Array<any>) =>
-          thread.find(
-            (message) =>
-              message.type === messageType && message.thid === threadId,
-          ),
-        )
-        .filter((message) => message)[0];
-      return result || null;
+      waciStorage = JSON.parse(fileContent) as JSON;
     } catch (err) {
       // handle file reading or parsing errors
       Logger.error(
@@ -253,6 +243,50 @@ export class IssuanceService {
         'IssueCredentialService',
       );
       return null;
+    }
+
+    if (agentType === AgentTypes.holder) {
+      // The holder agent stores the ack, but not the proposal
+      if (messageType === WaciMessageTypes.ProposeCredential) {
+        return null;
+      }
+      // ThreadId is the id of the proposal, not the pthid of the invitation
+      const result = waciStorage[threadId].find(
+        (message) => message.type === messageType,
+      );
+      return result;
+    } else if (agentType === AgentTypes.issuer) {
+      // The issuer agent stores the proposal, but not the ack
+      if (messageType === WaciMessageTypes.Ack) {
+        return null;
+      }
+
+      // If I'm looking for a proposal, I need to find the proposal with the same pthid as the threadId (the id of the invitation)
+      // The same pthid can lead to many proposals, so I want the last one
+      if (messageType === WaciMessageTypes.ProposeCredential) {
+        // Object.values(waciStorage).forEach((thread) =>
+        //   Logger.debug(`Thread: ${JSON.stringify(thread)}`),
+        // );
+        Logger.log(`Thread id: ${threadId}`, 'IssueCredentialService');
+        const lastThread = Object.values(waciStorage).pop() as any[];
+        const result = lastThread
+          .filter(
+            (message: any) =>
+              message.type === WaciMessageTypes.ProposeCredential &&
+              message.pthid === threadId,
+          )
+          .pop();
+        return result;
+      }
+      Logger.log(
+        `Message thread: ${waciStorage[messageType]} with threadId: ${threadId} in ${agentType}'s storage`,
+        'IssueCredentialService',
+      );
+      // ThreadId is the id of the proposal
+      const result = waciStorage[threadId].find(
+        (message) => message.type === messageType,
+      );
+      return result;
     }
   }
 }

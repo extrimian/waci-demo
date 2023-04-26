@@ -71,9 +71,9 @@ export class AgentService {
     );
 
     // Initializes agents for all the present types
-    const agentsMap = await this.initializeAgents(presentAgentTypes);
+    const agentInfoArray = await this.initializeAgents(presentAgentTypes);
 
-    const resolvedAgents = await this.resolveAgents(agentsMap);
+    const resolvedAgents = await this.resolveAgents(agentInfoArray);
 
     return resolvedAgents;
   }
@@ -84,9 +84,9 @@ export class AgentService {
       throw new NotFoundException(`Agent ${agentType} not found`);
     }
 
-    const agentsMap = await this.initializeAgents([agentType]);
+    const agentInfoArray = await this.initializeAgents([agentType]);
 
-    const resolvedAgents = await this.resolveAgents(agentsMap);
+    const resolvedAgents = await this.resolveAgents(agentInfoArray);
 
     return resolvedAgents;
   }
@@ -138,7 +138,7 @@ export class AgentService {
         vcStorage: new FileSystemStorage({
           filepath: `${this.storagePath}/${agentType}_vc.json`,
         }),
-        supportedTransports: [dwnDebugTransport],
+        // supportedTransports: [dwnDebugTransport],
       });
       agents.push(agent);
       // Initialize the agent, loading and configuring internal classes

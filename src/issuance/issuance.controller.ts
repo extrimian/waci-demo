@@ -43,22 +43,22 @@ export class IssuanceController {
   // After receiving the proposal, the issuer will create a credential offer to send back to the holder
   @Post('offer')
   async offerCredential(@Body() proposeCredentialDto: ProposeCredentialDto) {
-    await this.issuanceService.offerCredential(proposeCredentialDto);
+    return await this.issuanceService.offerCredential(proposeCredentialDto);
   }
 
   // After receiving the offer, the holder will create a credential request to send back to the issuer
   @Post('request')
   async getRequest(@Body() offerCredentialDto: OfferCredentialDto) {
-    await this.issuanceService.requestCredential(offerCredentialDto);
+    return await this.issuanceService.requestCredential(offerCredentialDto);
   }
 
   @Post('credential')
   async issueCredential(@Body() requestCredentialDto: RequestCredentialDto) {
-    await this.issuanceService.issueCredential(requestCredentialDto);
+    return await this.issuanceService.issueCredential(requestCredentialDto);
   }
 
   @Post('ack')
   async acknowledgeCredential(@Body() issueCredentialDto: IssueCredentialDto) {
-    await this.issuanceService.acknowledgeCredential(issueCredentialDto);
+    return await this.issuanceService.acknowledgeCredential(issueCredentialDto);
   }
 }
