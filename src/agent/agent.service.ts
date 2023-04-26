@@ -19,20 +19,11 @@ import {
 } from './utils/agent-types';
 import * as fs from 'fs';
 import { glob } from 'glob';
-import { agent } from 'supertest';
 import { DWNDebugTransport } from './utils/debug-transport';
-
-type InitializeAgentsParams = {
-  modenaUrl: string;
-  didMethod: string;
-  storagePath: string;
-  agentTypes?: AgentType[];
-};
 
 type AgentInfo = {
   agentType: AgentType;
   agent: Agent;
-  did?: DID;
 };
 
 type DidDocumentByType = {
@@ -44,7 +35,8 @@ type DidDocumentByType = {
 export class AgentService {
   modenaUrl = 'http://modena.gcba-extrimian.com:8080';
   didMethod = 'did:quarkid:matic';
-  dwnUrl = 'http://ssi.gcba-extrimian.com:1337/';
+  dwnUrl =
+    'https://dwm--ktdhk0c.bravegrass-b137de87.westus2.azurecontainerapps.io:1337';
   storagePath = 'storage';
 
   async isAgentPresent(type: AgentType) {
@@ -183,7 +175,7 @@ export class AgentService {
       if (!agentDid) {
         unregisteredAgents.push(agentInfo);
       } else {
-        registeredAgents.push({ ...agentInfo, did: agentDid });
+        registeredAgents.push(agentInfo);
         Logger.debug(
           `Agent ${agentInfo.agentType} already has a DID: ${agentDid.value}`,
           'AgentService',
@@ -223,10 +215,11 @@ export class AgentService {
     // DID creation aparently needs not be awaited, but the listeners do
     // await Promise.all(didCreationPromises);
     try {
-      const didArray = (await Promise.all(didCreationListeners)) as DID[];
+      await Promise.all(didCreationListeners);
+
       // Join newly registered agents with the ones that already had a DID
-      didArray.forEach((agentDid, index) => {
-        registeredAgents.push({ ...unregisteredAgents[index], did: agentDid });
+      unregisteredAgents.forEach((agentInfo) => {
+        registeredAgents.push(agentInfo);
       });
     } catch (err) {
       Logger.error(`Error creating DID: ${err}`, 'AgentService');
@@ -241,11 +234,15 @@ export class AgentService {
   ): Promise<DidDocumentByType[]> {
     // Only resolve agents that have a DID
     const registeredAgents = agentInfoArray.filter(
-      (agentInfo) => agentInfo.agent.identity.initialized && agentInfo.did,
+      (agentInfo) =>
+        agentInfo.agent.identity.initialized &&
+        agentInfo.agent.identity.getOperationalDID(),
     );
     // Resolve DID Documents
     const promises = registeredAgents.map((agentInfo) => {
-      return agentInfo.agent.resolver.resolve(agentInfo.did);
+      return agentInfo.agent.resolver.resolve(
+        agentInfo.agent.identity.getOperationalDID(),
+      );
     });
 
     // Wait for DID resolution

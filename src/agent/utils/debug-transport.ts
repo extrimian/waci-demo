@@ -152,7 +152,7 @@ export class DWNDebugTransport implements ITransport {
       msgParams.message.descriptor.parent = params.context.descriptor.objectId;
     }
 
-    Logger.log(
+    Logger.debug(
       `Sending message to DWN: ${JSON.stringify(msgParams.message.data)}`,
       'DWNDebugTransport',
     );

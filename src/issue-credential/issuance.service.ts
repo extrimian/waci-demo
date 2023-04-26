@@ -9,7 +9,6 @@ import { RequestCredentialDto } from './dto/request-credential';
 import { OfferCredentialDto } from './dto/offer-credential.dto';
 import { ProposeCredentialDto } from './dto/propose-credential';
 import { IssueCredentialDto } from './dto/issue-credential';
-import * as UUID from 'uuid';
 import { OobInvitationDto } from './dto/oob.dto';
 import { WaciMessageTypes } from './utils/issuance-utils';
 import { AgentTypes } from 'src/agent/utils/agent-types';
@@ -34,7 +33,10 @@ export class IssuanceService {
     const issuerInfo = await this.agentService.initializeAgents([
       AgentTypes.issuer,
     ]);
-    if (issuerInfo[0].did.value !== createOobInvitationDto.senderDid) {
+    if (
+      issuerInfo[0].agent.identity.getOperationalDID().value !==
+      createOobInvitationDto.senderDid
+    ) {
       Logger.error(
         'Issuer DID does not match the one in the request',
         'IssueCredentialService',
@@ -71,7 +73,10 @@ export class IssuanceService {
       AgentTypes.issuer,
       AgentTypes.holder,
     ]);
-    if (oobInvitationDto.from !== issuerInfo.did.value) {
+    if (
+      oobInvitationDto.from !==
+      issuerInfo.agent.identity.getOperationalDID().value
+    ) {
       Logger.error(
         'Issuer DID does not match the one in the request',
         'IssueCredentialService',
