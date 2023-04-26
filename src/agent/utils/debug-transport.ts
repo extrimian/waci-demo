@@ -152,7 +152,10 @@ export class DWNDebugTransport implements ITransport {
       msgParams.message.descriptor.parent = params.context.descriptor.objectId;
     }
 
-    Logger.log(`Sending message to DWN: ${msgParams}`, 'DWNDebugTransport');
+    Logger.log(
+      `Sending message to DWN: ${JSON.stringify(msgParams.message.data)}`,
+      'DWNDebugTransport',
+    );
 
     await this.dwnClientMap
       .get(this.agent.identity.getOperationalDID().value)

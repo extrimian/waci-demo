@@ -1,6 +1,6 @@
 import { AgentTypes } from 'src/agent/utils/agent-types';
 import * as fs from 'fs';
-import { DID } from '@extrimian/agent';
+
 export enum WaciMessageTypes {
   OobInvitation = 'https://didcomm.org/out-of-band/2.0/invitation',
   ProposeCredential = 'https://didcomm.org/issue-credential/3.0/propose-credential',
@@ -10,6 +10,7 @@ export enum WaciMessageTypes {
   Ack = 'https://didcomm.org/issue-credential/3.0/ack',
   ProblemReport = 'https://didcomm.org/report-problem/2.0/problem-report',
 }
+
 export enum WaciGoalCodes {
   Issuance = 'streamlined-vc',
   Presentation = 'streamlined-vp',

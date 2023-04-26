@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DID } from '@extrimian/agent';
 import { WaciMessageTypes } from '../utils/issuance-utils';
 
 export class IssueCredentialDto {
@@ -24,18 +23,18 @@ export class IssueCredentialDto {
   thid: string;
 
   @ApiProperty({
-    type: DID,
+    type: String,
     description: 'El DID del issuer',
     example: 'did:quarkid:matic:issuer',
   })
-  from: DID;
+  from: string;
 
   @ApiProperty({
-    type: Array<DID>,
+    type: Array<String>,
     description: 'El DID del holder',
     examples: ['did:quarkid:matic:holder'],
   })
-  to: Array<DID>;
+  to: Array<string>;
 
   @ApiProperty({
     type: Object,
@@ -52,8 +51,8 @@ export class IssueCredentialDto {
   constructor(
     id: string,
     thid: string,
-    from: DID,
-    to: Array<DID>,
+    from: string,
+    to: Array<string>,
     body: any,
     attachments: Array<any>,
   ) {

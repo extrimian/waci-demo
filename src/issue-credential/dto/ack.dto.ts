@@ -24,18 +24,18 @@ class AckDto {
   thid: string;
 
   @ApiProperty({
-    type: DID,
+    type: String,
     description: 'El DID del holder',
     example: 'did:quarkid:matic:holder',
   })
-  from: DID;
+  from: string;
 
   @ApiProperty({
-    type: Array<DID>,
+    type: Array<String>,
     description: 'El DID del issuer',
     examples: ['did:quarkid:matic:issuer'],
   })
-  to: Array<DID>;
+  to: Array<string>;
 
   @ApiProperty({
     type: Object,
@@ -43,7 +43,13 @@ class AckDto {
   })
   body: any;
 
-  constructor(id: string, thid: string, from: DID, to: Array<DID>, body: any) {
+  constructor(
+    id: string,
+    thid: string,
+    from: string,
+    to: Array<string>,
+    body: any,
+  ) {
     this.type = WaciMessageTypes.Ack;
     this.id = id;
     this.thid = thid;

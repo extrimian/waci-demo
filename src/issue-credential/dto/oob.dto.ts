@@ -1,8 +1,7 @@
-import { DID } from '@extrimian/agent';
 import { OobInvitationBody } from './create-oob.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { WaciMessageTypes } from '../utils/issuance-utils';
-
+import base64url from 'base64url';
 export class OobInvitationDto {
   @ApiProperty({
     type: String,
@@ -18,11 +17,11 @@ export class OobInvitationDto {
   id: string;
 
   @ApiProperty({
-    type: DID,
+    type: String,
     description: 'El DID del issuer',
     example: 'did:quarkid:matic:issuer',
   })
-  from: DID;
+  from: string;
 
   @ApiProperty({
     type: Object,
@@ -30,10 +29,30 @@ export class OobInvitationDto {
   })
   body: OobInvitationBody;
 
-  constructor(id: string, from: DID, body: OobInvitationBody) {
+  constructor(id: string, from: string, body: OobInvitationBody) {
     this.type = WaciMessageTypes.OobInvitation;
     this.id = id;
     this.from = from;
     this.body = body;
+  }
+
+  static from(invitationMessage: string) {
+    const invitationJson = JSON.parse(
+      base64url.decode(invitationMessage.split('_oob=')[1]),
+    );
+
+    return new OobInvitationDto(
+      invitationJson.id,
+      invitationJson.from,
+      invitationJson.body,
+    );
+  }
+
+  static toInvitationMessage(oobInvitationDto: OobInvitationDto) {
+    const protocol = 'didcomm://?_oob=';
+    const invitationMessage =
+      protocol + base64url.encode(JSON.stringify(oobInvitationDto));
+
+    return invitationMessage;
   }
 }

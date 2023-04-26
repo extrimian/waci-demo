@@ -1,4 +1,3 @@
-import { DID } from '@extrimian/agent';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { WaciGoalCodes } from '../utils/issuance-utils';
 
@@ -16,11 +15,11 @@ export class CreateOobInvitationDto {
   goalCode: WaciGoalCodes.Issuance;
 
   @ApiProperty({
-    type: DID,
+    type: String,
     description: 'El DID del issuer',
-    example: 'did:quarkid:matic:example.com',
+    example: 'did:quarkid:matic:issuer',
   })
-  senderDid: DID;
+  senderDid: string;
 
   @ApiPropertyOptional({
     type: Object,

@@ -32,11 +32,11 @@ export class RequestCredentialDto {
   from: string;
 
   @ApiProperty({
-    type: Array<DID>,
+    type: Array<String>,
     description: 'El DID del issuer',
     examples: ['did:quarkid:matic:issuer'],
   })
-  to: Array<DID>;
+  to: Array<string>;
 
   @ApiProperty({
     type: Object,
@@ -54,7 +54,7 @@ export class RequestCredentialDto {
     id: string,
     thid: string,
     from: string,
-    to: Array<DID>,
+    to: Array<string>,
     body: any,
     attachments: Array<any>,
   ) {

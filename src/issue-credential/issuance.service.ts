@@ -1,80 +1,118 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
 import {
-  CreateOobInvitationDto as CreateOobInvitationDto,
-  OobInvitationBody,
-} from './dto/create-oob.dto';
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
+import { CreateOobInvitationDto } from './dto/create-oob.dto';
 import { RequestCredentialDto } from './dto/request-credential';
 import { OfferCredentialDto } from './dto/offer-credential.dto';
 import { ProposeCredentialDto } from './dto/propose-credential';
 import { IssueCredentialDto } from './dto/issue-credential';
 import * as UUID from 'uuid';
 import { OobInvitationDto } from './dto/oob.dto';
-import {
-  WACIMessageResponseType,
-  WaciGoalCodes,
-  WaciMessageTypes,
-  getDidByType,
-} from './utils/issuance-utils';
+import { WaciMessageTypes } from './utils/issuance-utils';
 import { AgentTypes } from 'src/agent/utils/agent-types';
-import { Agent } from '@extrimian/agent';
+import { CredentialFlow } from '@extrimian/agent';
 import { AgentService } from 'src/agent/agent.service';
-
-const createUUID = UUID.v4;
+import * as fs from 'fs';
 
 @Injectable()
 export class IssuanceService {
   constructor(private readonly agentService: AgentService) {}
   // Creates a WACI OOB invitation for credential issuance: https://identity.foundation/waci-didcomm/#step-1-generate-out-of-band-oob-message
-  createOobMessage(
+  async createOobMessage(
     createOobInvitationDto: CreateOobInvitationDto,
-  ): OobInvitationDto {
+  ): Promise<OobInvitationDto> {
     Logger.log('Creating issuance invitation', 'IssueCredentialService');
-    const SUPPORTED_ALGORITHMS = ['didcomm/v2'];
 
-    const responseBody: OobInvitationBody = {
-      goal_code: createOobInvitationDto.goalCode,
-      accept: SUPPORTED_ALGORITHMS,
-    };
+    if (!(await this.agentService.isAgentPresent(AgentTypes.issuer))) {
+      Logger.error('Issuer agent not initialized', 'IssueCredentialService');
+      throw new NotFoundException('El agente emisor no fue inicializado');
+    }
 
-    return new OobInvitationDto(
-      createUUID(),
-      createOobInvitationDto.senderDid,
-      responseBody,
-    );
+    const issuerInfo = await this.agentService.initializeAgents([
+      AgentTypes.issuer,
+    ]);
+    if (issuerInfo[0].did.value !== createOobInvitationDto.senderDid) {
+      Logger.error(
+        'Issuer DID does not match the one in the request',
+        'IssueCredentialService',
+      );
+      throw new BadRequestException(
+        'El DID del emisor no coincide con el dado',
+      );
+    }
+
+    const invitation = await issuerInfo[0].agent.vc.createInvitationMessage({
+      flow: CredentialFlow.Issuance,
+    });
+
+    return OobInvitationDto.from(invitation);
   }
 
   // Creates a WACI credential proposal: https://identity.foundation/waci-didcomm/#step-2-issue-credential-propose-credential
-  proposeCredential(oobInvitationDto: OobInvitationDto): ProposeCredentialDto {
-    // const message = messageThread[messageThread.length - 1];
-    let responseMessageType: WaciMessageTypes;
-    switch (oobInvitationDto.body.goal_code) {
-      case WaciGoalCodes.Issuance:
-        responseMessageType = WaciMessageTypes.ProposeCredential;
-        break;
-      default:
-        throw Error('No goal code defined in invitation');
+  async proposeCredential(
+    oobInvitationDto: OobInvitationDto,
+  ): Promise<ProposeCredentialDto> {
+    if (!this.agentService.isAgentPresent(AgentTypes.holder)) {
+      Logger.error(
+        'Issuer or holder agent not initialized',
+        'IssueCredentialService',
+      );
+      throw new NotFoundException('El agente receptor no fue inicializado');
     }
-    const issuerDid = oobInvitationDto.from;
-    const holderDid = getDidByType(AgentTypes.holder);
+    if (!this.agentService.isAgentPresent(AgentTypes.issuer)) {
+      Logger.error('Issuer agent not initialized', 'IssueCredentialService');
+      throw new NotFoundException('El agente emisor no fue inicializado');
+    }
 
-    // Send DWN message to issuer
-    // const dwnMessage = {
-    //   responseType: WACIMessageResponseType.CreateThread,
-    //   message: {
-    //     type: responseMessageType,
-    //     id: createUUID(),
-    //     pthid: oobInvitationDto.id,
-    //     from: holderDid,
-    //     to: [issuerDid],
-    //   },
-    // };
+    const [issuerInfo, holderInfo] = await this.agentService.initializeAgents([
+      AgentTypes.issuer,
+      AgentTypes.holder,
+    ]);
+    if (oobInvitationDto.from !== issuerInfo.did.value) {
+      Logger.error(
+        'Issuer DID does not match the one in the request',
+        'IssueCredentialService',
+      );
+      throw new NotFoundException('El DID del emisor no coincide con el dado');
+    }
 
-    return new ProposeCredentialDto(
-      createUUID(),
-      oobInvitationDto.id,
-      holderDid,
-      [issuerDid],
+    await holderInfo.agent.vc.processMessage({
+      message: OobInvitationDto.toInvitationMessage(oobInvitationDto),
+    });
+
+    await new Promise((resolve) => {
+      holderInfo.agent.vc.credentialArrived.on((vc) => {
+        if (vc) {
+          holderInfo.agent.vc.saveCredential(vc);
+          Logger.log(
+            'Credential arrived in holder agent',
+            'IssueCredentialService',
+          );
+          resolve(0);
+        } else {
+          Logger.error(
+            "Credential didn't arrive in holder agent",
+            'IssueCredentialService',
+          );
+          resolve(1);
+        }
+      });
+    });
+
+    const credentialProposal: ProposeCredentialDto =
+      await this.findMessageByType(
+        AgentTypes.issuer,
+        WaciMessageTypes.ProposeCredential,
+        oobInvitationDto.id,
+      );
+    Logger.debug(
+      `Credential proposal found ${credentialProposal}`,
+      'IssueCredentialService',
     );
+    return credentialProposal;
   }
 
   // Creates a WACI credential offer: https://identity.foundation/waci-didcomm/#step-3-issue-credential-offer-credential-credential-manifest
@@ -97,5 +135,35 @@ export class IssuanceService {
   // Creates a WACI credential acknowledgement: https://identity.foundation/waci-didcomm/#step-6-issue-credential-ack
   acknowledgeCredential(issueCredentialDto: IssueCredentialDto) {
     throw new Error('Method not implemented.');
+  }
+
+  async findMessageByType(
+    agentType: AgentTypes,
+    messageType: WaciMessageTypes,
+    threadId: string,
+  ) {
+    const filePath = `${this.agentService.storagePath}/${agentType}-waci-storage.json`;
+
+    try {
+      const fileContent = await fs.promises.readFile(filePath, 'utf-8');
+      const jsonData = JSON.parse(fileContent);
+      // Get the matching message and remove nulls
+      const result = Object.values(jsonData)
+        .flatMap((thread: Array<any>) =>
+          thread.find(
+            (message) =>
+              message.type === messageType && message.thid === threadId,
+          ),
+        )
+        .filter((message) => message)[0];
+      return result || null;
+    } catch (err) {
+      // handle file reading or parsing errors
+      Logger.error(
+        `Error searching for message ${messageType} in ${agentType}'s thread ${threadId}: ${err}`,
+        'IssueCredentialService',
+      );
+      return null;
+    }
   }
 }

@@ -47,9 +47,9 @@ export class AgentService {
   dwnUrl = 'http://ssi.gcba-extrimian.com:1337/';
   storagePath = 'storage';
 
-  private async isAgentPresent(type: AgentType) {
+  async isAgentPresent(type: AgentType) {
     const files = await glob(`${this.storagePath}/${type}*`);
-    Logger.debug(`Agent ${type} present: ${files}`, 'AgentService');
+    Logger.debug(`Agent ${type} present`, 'AgentService');
     return files.length > 0;
   }
 
