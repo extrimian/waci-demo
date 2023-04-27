@@ -19,7 +19,7 @@ import {
 import * as fs from 'fs';
 import { glob } from 'glob';
 import { DWNDebugTransport } from './utils/debug-transport';
-import config from 'src/config';
+import config from '../config';
 
 export type AgentInfo = {
   agentType: AgentType;
@@ -169,7 +169,7 @@ export class AgentService {
     // Separate the agents between those that already have a DID and those that don't
     const registeredAgents: AgentInfo[] = [];
     const unregisteredAgents: AgentInfo[] = [];
-    agentInfoArray.filter((agentInfo) => {
+    agentInfoArray.forEach((agentInfo) => {
       const agentDid = agentInfo.agent.identity.getOperationalDID();
       if (!agentDid) {
         unregisteredAgents.push(agentInfo);
