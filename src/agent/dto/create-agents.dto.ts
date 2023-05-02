@@ -6,7 +6,7 @@ export class CreateByTypeDto {
     type: Array<AgentType>,
     description: 'El tipo de agente',
     examples: ['["holder"]', '["issuer"]', '["verifier"]'],
-    example: '["holder", "issuer", "verifier"]',
+    example: '["issuer", "holder", "verifier"]',
   })
   types: AgentTypes[];
 }

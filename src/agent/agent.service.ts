@@ -138,7 +138,7 @@ export class AgentService {
         vcStorage: new FileSystemStorage({
           filepath: `${this.storagePath}/${agentType}_vc.json`,
         }),
-        // supportedTransports: [dwnDebugTransport],
+        supportedTransports: [dwnDebugTransport],
       });
       agents.push(agent);
       // Initialize the agent, loading and configuring internal classes

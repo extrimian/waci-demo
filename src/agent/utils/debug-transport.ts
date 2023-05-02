@@ -13,6 +13,7 @@ import { DWNMessage, MessageStorage } from '@extrimian/dwn-client';
 import { DIDDocument, DIDDocumentUtils } from '@extrimian/did-core';
 import { DID } from '@extrimian/agent';
 import { Logger } from '@nestjs/common';
+import * as fs from 'fs';
 
 export class DWNDebugTransport implements ITransport {
   private readonly onMessageArrived = new LiteEvent<MessageArrivedEventArg>();
@@ -152,10 +153,7 @@ export class DWNDebugTransport implements ITransport {
       msgParams.message.descriptor.parent = params.context.descriptor.objectId;
     }
 
-    Logger.debug(
-      `Sending message to DWN: ${JSON.stringify(msgParams.message.data)}`,
-      'DWNDebugTransport',
-    );
+    logJsonToFile('storage/dwn-messages.json', msgParams.message.data);
 
     await this.dwnClientMap
       .get(this.agent.identity.getOperationalDID().value)
@@ -193,6 +191,10 @@ export class DWNDebugTransport implements ITransport {
   }
 }
 
+function logJsonToFile(filePath: string, message: any): void {
+  const jsonMessage = JSON.stringify(message);
+  fs.appendFileSync(filePath, `${jsonMessage}\n`);
+}
 const messagesStorage: DWNMessage[] = [];
 let lastPullDate: Date;
 

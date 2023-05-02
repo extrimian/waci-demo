@@ -149,7 +149,7 @@ export class IssuanceService {
       proposeCredentialDto.id,
     );
     Logger.debug(
-      `Credential offer found ${credentialOffer}`,
+      `Credential offer found ${JSON.stringify(credentialOffer)}`,
       'IssueCredentialService',
     );
 
@@ -172,7 +172,7 @@ export class IssuanceService {
       );
 
     Logger.debug(
-      `Credential request found ${credentialRequest}`,
+      `Credential request found ${JSON.stringify(credentialRequest)}`,
       'IssueCredentialService',
     );
 
@@ -193,7 +193,7 @@ export class IssuanceService {
     );
 
     Logger.debug(
-      `Credential found ${issueCredential}`,
+      `Credential found ${JSON.stringify(issueCredential)}`,
       'IssueCredentialService',
     );
 
@@ -214,7 +214,9 @@ export class IssuanceService {
     );
 
     Logger.debug(
-      `Credential acknowledgement found ${credentialAcknowledgement}`,
+      `Credential acknowledgement found ${JSON.stringify(
+        credentialAcknowledgement,
+      )}`,
       'IssueCredentialService',
     );
 
@@ -232,10 +234,6 @@ export class IssuanceService {
       return this.getProposal(waciStorage, threadId);
     }
 
-    Logger.log(
-      `Message thread: ${waciStorage[threadId]} with threadId: ${threadId} in WACI storage`,
-      'IssueCredentialService',
-    );
     // ThreadId is the id of the proposal
     const result = waciStorage[threadId]?.find(
       (message) => message.type === messageType,
@@ -247,8 +245,6 @@ export class IssuanceService {
   private getProposal(waciStorage: any, pthid: string) {
     // If I'm looking for a proposal, I need to find the proposal with the same pthid as the threadId (the id of the invitation)
     // The same pthid can lead to many proposals, so I want the last one
-    Logger.log(`Thread id: ${pthid}`, 'IssueCredentialService');
-
     const lastThread = Object.values(waciStorage).pop() as any[];
     const result = lastThread
       .filter(
