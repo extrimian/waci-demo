@@ -26,11 +26,11 @@ export class IssuanceController {
   constructor(private readonly issuanceService: IssuanceService) {}
 
   @Post('invitation')
+  @ApiCreatedResponse({ description: 'La invitación fue creada exitosamente' })
   @ApiBadRequestResponse({ description: 'El tipo de invitación es inválido' })
   @ApiInternalServerErrorResponse({
     description: 'Ocurrió un error inesperado creando la invitación',
   })
-  @ApiCreatedResponse({ description: 'La invitación fue creada exitosamente' })
   async createOobMessage(
     @Body() createOobMessageDto: CreateOobInvitationDto,
   ): Promise<OobInvitationDto> {
@@ -43,6 +43,9 @@ export class IssuanceController {
 
   // After receiving the invitation, the holder will create a credential proposal to send back to the issuer
   @Post('proposal')
+  @ApiCreatedResponse({
+    description: 'La propuesta de credencial fue creada exitosamente',
+  })
   @ApiNotFoundResponse({
     description: 'No pudimos encontrar la propuesta de credencial',
   })
@@ -65,6 +68,9 @@ export class IssuanceController {
 
   // After receiving the proposal, the issuer will create a credential offer to send back to the holder
   @Post('offer')
+  @ApiCreatedResponse({
+    description: 'La oferta de credencial fue creada exitosamente',
+  })
   @ApiBadRequestResponse({
     description: 'Hubo un problema con los parámetros ingresados',
   })
@@ -87,6 +93,9 @@ export class IssuanceController {
 
   // After receiving the offer, the holder will create a credential request to send back to the issuer
   @Post('request')
+  @ApiCreatedResponse({
+    description: 'La solicitud de credencial fue creada exitosamente',
+  })
   @ApiBadRequestResponse({
     description: 'Hubo un problema con los parámetros ingresados',
   })
@@ -108,6 +117,9 @@ export class IssuanceController {
   }
 
   @Post('credential')
+  @ApiCreatedResponse({
+    description: 'La credencial fue creada exitosamente',
+  })
   @ApiBadRequestResponse({
     description: 'Hubo un problema con los parámetros ingresados',
   })
@@ -129,6 +141,9 @@ export class IssuanceController {
   }
 
   @Post('ack')
+  @ApiCreatedResponse({
+    description: 'La confirmación de credencial fue creada exitosamente',
+  })
   @ApiBadRequestResponse({
     description: 'Hubo un problema con los parámetros ingresados',
   })

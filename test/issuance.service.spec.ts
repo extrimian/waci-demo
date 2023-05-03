@@ -2,40 +2,6 @@ import { Test } from '@nestjs/testing';
 import { IssuanceService } from '../src/issuance/issuance.service';
 import { AgentService } from '../src/agent/agent.service';
 import { WaciMessageTypes } from '../src/issuance/utils/issuance-utils';
-import { assert } from 'console';
-
-// describe('IssuanceService', () => {
-//   const agentService: AgentService = new AgentService();
-//   const issuanceService: IssuanceService = new IssuanceService(agentService);
-
-// beforeEach(async () => {
-//   await Test.createTestingModule({
-//     providers: [
-//       IssuanceService,
-//       {
-//         provide: 'config',
-//         useValue: {
-//           port: 3000,
-//           didMethod: 'did:quarkid:matic',
-//           dwnUrl:
-//             'https://dwm--4uw2lpp.bravegrass-b137de87.westus2.azurecontainerapps.io/',
-//           modenaUrl: 'http://modena.gcba-extrimian.com:8080',
-//           storagePath: 'test/storage',
-//         },
-//       },
-//       {
-//         provide: AgentService,
-//         useValue: {
-//           create: jest.fn(),
-//           findAll: jest.fn(),
-//           findOne: jest.fn(),
-//           update: jest.fn(),
-//           remove: jest.fn(),
-//         },
-//       },
-//     ],
-//   }).compile();
-// });
 
 // Mock dotenv and config modules
 jest.mock('dotenv');

@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
@@ -85,6 +86,11 @@ export class IssuanceService {
       flow: CredentialFlow.Issuance,
     });
 
+    Logger.log(
+      `Invitation created: ${JSON.stringify(invitation)}`,
+      'IssueCredentialService',
+    );
+
     return OobInvitationDto.from(invitation);
   }
 
@@ -127,10 +133,12 @@ export class IssuanceService {
         WaciMessageTypes.ProposeCredential,
         oobInvitationDto.id,
       );
-    Logger.debug(
+
+    Logger.log(
       `Credential proposal found ${JSON.stringify(credentialProposal)}`,
       'IssueCredentialService',
     );
+
     return credentialProposal;
   }
 
@@ -148,7 +156,8 @@ export class IssuanceService {
       WaciMessageTypes.OfferCredential,
       proposeCredentialDto.id,
     );
-    Logger.debug(
+
+    Logger.log(
       `Credential offer found ${JSON.stringify(credentialOffer)}`,
       'IssueCredentialService',
     );
@@ -171,7 +180,7 @@ export class IssuanceService {
         offerCredentialDto.thid,
       );
 
-    Logger.debug(
+    Logger.log(
       `Credential request found ${JSON.stringify(credentialRequest)}`,
       'IssueCredentialService',
     );
@@ -192,7 +201,7 @@ export class IssuanceService {
       requestCredentialDto.thid,
     );
 
-    Logger.debug(
+    Logger.log(
       `Credential found ${JSON.stringify(issueCredential)}`,
       'IssueCredentialService',
     );
@@ -213,7 +222,7 @@ export class IssuanceService {
       issueCredentialDto.thid,
     );
 
-    Logger.debug(
+    Logger.log(
       `Credential acknowledgement found ${JSON.stringify(
         credentialAcknowledgement,
       )}`,
@@ -275,7 +284,9 @@ export class IssuanceService {
         'IssueCredentialService',
       );
 
-      return null;
+      throw new InternalServerErrorException(
+        'Hubo un error buscando el mensaje en el almacenamiento interno',
+      );
     }
   }
 
