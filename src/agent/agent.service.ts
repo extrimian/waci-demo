@@ -202,7 +202,7 @@ export class AgentService {
             reject(new InternalServerErrorException('Error creating DID'));
           }
           Logger.debug(
-            `Listened for DID created for agent ${agentInfo.agentType}: ${args.did.value}`,
+            `DID published for ${agentInfo.agentType}: ${args.did.value}`,
             'AgentService',
           );
           resolve(args.did);

@@ -108,11 +108,11 @@ export class IssuanceService {
       message: OobInvitationDto.toInvitationMessage(oobInvitationDto),
     });
 
-    await new Promise((resolve) => {
+    await new Promise((resolve, reject) => {
       holderInfo.agent.vc.credentialArrived.on((vc) => {
         if (vc) {
           holderInfo.agent.vc.saveCredential(vc);
-          Logger.log(
+          Logger.debug(
             'Credential arrived in holder agent',
             'IssueCredentialService',
           );
@@ -122,7 +122,7 @@ export class IssuanceService {
             "Credential didn't arrive in holder agent",
             'IssueCredentialService',
           );
-          resolve(1);
+          reject();
         }
       });
     });
