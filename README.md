@@ -42,7 +42,7 @@ Primero debemos crear la solicitud de emisión de credencial. Para eso, hay que 
 
 Este paso representa la obtención de la invitación de emisión de credencial por parte del `issuer` (como generar un código QR). La invitación será recibida por el `holder` mediante un intercambio `Out Of Band (OOB)` como escannear un QR, por ejemplo. Al acceder al link obtenido, el `holder` va a aceptar la invitación y comenzar el proceso de emisión de credencial propiamente dicho en el siguiente paso.
 
-![Crear invitación](./resources/create-invitation-final.mp4)
+![Crear invitación](./resources/create-invitation-final.mp4https://streamable.com/82h8zi)
 
 > Nota: En los siguientes pasos lo único que hay que hacer es copiar la respuesta del paso anterior y pegarla en el body del siguiente endpoint.
 
