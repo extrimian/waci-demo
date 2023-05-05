@@ -160,5 +160,7 @@ export class IssuanceController {
 
     if (!ack)
       throw new NotFoundException('No se encontró la confirmación solicitada');
+
+    return ack;
   }
 }
