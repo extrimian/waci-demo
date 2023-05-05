@@ -14,6 +14,7 @@ La aplicación se configura con valores por defecto y mediante variables de ento
 - DID Method usado para crear los agentes: `DID_METHOD`
 - URL del Decentralized Web Node (DWN): `DWN_URL`
 - URL del servicio de anchor Modena: `MODENA_URL`
+
 - Path a la carpeta de almacenamiento: `STORAGE_PATH`
 
 > Nota: Consultar en el archivo .env.example para ver los valores por defecto. Estos también están disponibles en src/config.ts
@@ -42,7 +43,7 @@ Primero debemos crear la solicitud de emisión de credencial. Para eso, hay que 
 
 Este paso representa la obtención de la invitación de emisión de credencial por parte del `issuer` (como generar un código QR). La invitación será recibida por el `holder` mediante un intercambio `Out Of Band (OOB)` como escannear un QR, por ejemplo. Al acceder al link obtenido, el `holder` va a aceptar la invitación y comenzar el proceso de emisión de credencial propiamente dicho en el siguiente paso.
 
-![Crear invitación](https://streamable.com/82h8zi)
+![Crear invitación](https://user-images.githubusercontent.com/58373778/236510685-d951eb2e-adf9-475e-8b94-799396a747bb.mp4)
 
 > Nota: En los siguientes pasos lo único que hay que hacer es copiar la respuesta del paso anterior y pegarla en el body del siguiente endpoint.
 
