@@ -15,8 +15,6 @@ La aplicación se configura con valores por defecto y mediante variables de ento
 - URL del Decentralized Web Node (DWN): `DWN_URL`
 - URL del servicio de anchor Modena: `MODENA_URL`
 
-- Path a la carpeta de almacenamiento: `STORAGE_PATH`
-
 > Nota: Consultar en el archivo .env.example para ver los valores por defecto. Estos también están disponibles en src/config.ts
 
 ## Correr la aplicación
