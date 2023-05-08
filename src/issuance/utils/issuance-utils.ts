@@ -1,7 +1,7 @@
 import { AgentTypes } from 'src/agent/utils/agent-types';
 import * as fs from 'fs';
 
-export enum WaciMessageTypes {
+export enum IssuanceMessageTypes {
   OobInvitation = 'https://didcomm.org/out-of-band/2.0/invitation',
   ProposeCredential = 'https://didcomm.org/issue-credential/3.0/propose-credential',
   OfferCredential = 'https://didcomm.org/issue-credential/3.0/offer-credential',
@@ -11,10 +11,7 @@ export enum WaciMessageTypes {
   ProblemReport = 'https://didcomm.org/report-problem/2.0/problem-report',
 }
 
-export enum WaciGoalCodes {
-  Issuance = 'streamlined-vc',
-  Presentation = 'streamlined-vp',
-}
+export const IssuanceGoalCode = 'streamlined-vc';
 
 export const enum WACIMessageResponseType {
   CreateThread,

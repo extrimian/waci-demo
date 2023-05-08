@@ -1,17 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IssuanceMessageTypes } from '../utils/issuance-utils';
+import { PresentationMessageTypes } from '../utils/presentation-utils';
 
-export class IssueCredentialDto {
+export class PresentationRequestDto {
   @ApiProperty({
     type: String,
-    description: 'El tipo de mensaje WACI, en este caso una credencial',
-    example: IssuanceMessageTypes.IssueCredential,
+    description:
+      'El tipo de mensaje, en este caso una solicitud de presentación',
+    example: PresentationMessageTypes.RequestPresentation,
   })
   type: string;
 
   @ApiProperty({
     type: String,
-    description: 'El ID del mensaje',
+    description: 'El id del mensaje',
+    example: 'request-presentation-id',
   })
   id: string;
 
@@ -24,15 +26,15 @@ export class IssueCredentialDto {
 
   @ApiProperty({
     type: String,
-    description: 'El DID del issuer',
-    example: 'did:quarkid:matic:issuer',
+    description: 'El DID del verifier',
+    example: 'did:quarkid:matic:verifier',
   })
   from: string;
 
   @ApiProperty({
     type: Array<String>,
-    description: 'El DID del holder',
-    examples: ['did:quarkid:matic:holder'],
+    description: 'El DID de los provers',
+    examples: ['did:quarkid:matic:prover'],
   })
   to: Array<string>;
 
@@ -43,8 +45,8 @@ export class IssueCredentialDto {
   body: any;
 
   @ApiProperty({
-    type: Object,
-    description: 'Los attachments del mensaje',
+    type: Array<Object>,
+    description: 'Las Credential Applications adjuntas al mensaje',
   })
   attachments: Array<any>;
 
@@ -56,7 +58,7 @@ export class IssueCredentialDto {
     body: any,
     attachments: Array<any>,
   ) {
-    this.type = IssuanceMessageTypes.IssueCredential;
+    this.type = PresentationMessageTypes.RequestPresentation;
     this.id = id;
     this.thid = thid;
     this.from = from;

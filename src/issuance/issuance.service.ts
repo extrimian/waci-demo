@@ -11,7 +11,7 @@ import { OfferCredentialDto } from './dto/offer-credential.dto';
 import { ProposeCredentialDto } from './dto/propose-credential';
 import { IssueCredentialDto } from './dto/issue-credential';
 import { OobInvitationDto } from './dto/oob.dto';
-import { WaciMessageTypes } from './utils/issuance-utils';
+import { IssuanceMessageTypes } from './utils/issuance-utils';
 import { AgentTypes } from '../agent/utils/agent-types';
 import { CredentialFlow } from '@extrimian/agent';
 import { AgentInfo, AgentService } from '../agent/agent.service';
@@ -130,7 +130,7 @@ export class IssuanceService {
     // Get the credential proposal from the issuer agent's WACI storage
     const credentialProposal: ProposeCredentialDto =
       await this.findMessageByType(
-        WaciMessageTypes.ProposeCredential,
+        IssuanceMessageTypes.ProposeCredential,
         oobInvitationDto.id,
       );
 
@@ -153,7 +153,7 @@ export class IssuanceService {
 
     // Get the credential offer from the issuer agent's WACI storage
     const credentialOffer: OfferCredentialDto = await this.findMessageByType(
-      WaciMessageTypes.OfferCredential,
+      IssuanceMessageTypes.OfferCredential,
       proposeCredentialDto.id,
     );
 
@@ -176,7 +176,7 @@ export class IssuanceService {
     // Get the credential request from the holder agent's WACI storage
     const credentialRequest: RequestCredentialDto =
       await this.findMessageByType(
-        WaciMessageTypes.RequestCredential,
+        IssuanceMessageTypes.RequestCredential,
         offerCredentialDto.thid,
       );
 
@@ -197,7 +197,7 @@ export class IssuanceService {
 
     // Get the credential from the issuer agent's WACI storage
     const issueCredential: IssueCredentialDto = await this.findMessageByType(
-      WaciMessageTypes.IssueCredential,
+      IssuanceMessageTypes.IssueCredential,
       requestCredentialDto.thid,
     );
 
@@ -218,7 +218,7 @@ export class IssuanceService {
 
     // Get the credential acknowledgement from the holder agent's WACI storage
     const credentialAcknowledgement: AckDto = await this.findMessageByType(
-      WaciMessageTypes.Ack,
+      IssuanceMessageTypes.Ack,
       issueCredentialDto.thid,
     );
 
@@ -233,13 +233,13 @@ export class IssuanceService {
   }
 
   async findMessageByType(
-    messageType: WaciMessageTypes,
+    messageType: IssuanceMessageTypes,
     threadId: string,
   ): Promise<any> {
     const waciStorage = await this.getWaciStorage(messageType, threadId);
 
     // Propose credential is a special case, because the threadId is the id of the invitation, stored as thid
-    if (messageType === WaciMessageTypes.ProposeCredential) {
+    if (messageType === IssuanceMessageTypes.ProposeCredential) {
       return this.getProposal(waciStorage, threadId);
     }
 
@@ -258,7 +258,7 @@ export class IssuanceService {
     const result = lastThread
       .filter(
         (message: any) =>
-          message.type === WaciMessageTypes.ProposeCredential &&
+          message.type === IssuanceMessageTypes.ProposeCredential &&
           message.pthid === pthid,
       )
       .pop();
@@ -267,7 +267,7 @@ export class IssuanceService {
   }
 
   private async getWaciStorage(
-    messageType: WaciMessageTypes,
+    messageType: IssuanceMessageTypes,
     threadId: string,
   ): Promise<any> {
     // Decide on what agent's storage to search for the message
@@ -290,17 +290,17 @@ export class IssuanceService {
     }
   }
 
-  private decideAgentType(messageType: WaciMessageTypes): AgentTypes {
+  private decideAgentType(messageType: IssuanceMessageTypes): AgentTypes {
     switch (messageType) {
-      case WaciMessageTypes.ProposeCredential:
+      case IssuanceMessageTypes.ProposeCredential:
         return AgentTypes.issuer;
-      case WaciMessageTypes.OfferCredential:
+      case IssuanceMessageTypes.OfferCredential:
         return AgentTypes.issuer;
-      case WaciMessageTypes.RequestCredential:
+      case IssuanceMessageTypes.RequestCredential:
         return AgentTypes.issuer;
-      case WaciMessageTypes.IssueCredential:
+      case IssuanceMessageTypes.IssueCredential:
         return AgentTypes.issuer;
-      case WaciMessageTypes.Ack:
+      case IssuanceMessageTypes.Ack:
         return AgentTypes.holder;
       default:
         throw new Error(

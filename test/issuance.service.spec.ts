@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { IssuanceService } from '../src/issuance/issuance.service';
 import { AgentService } from '../src/agent/agent.service';
-import { WaciMessageTypes } from '../src/issuance/utils/issuance-utils';
+import { IssuanceMessageTypes } from '../src/issuance/utils/issuance-utils';
 
 // Mock dotenv and config modules
 jest.mock('dotenv');
@@ -87,7 +87,7 @@ describe('IssuanceService', () => {
   describe('findMessageByType', () => {
     it('should return undefined if no message is found', async () => {
       const message = await issuanceService.findMessageByType(
-        WaciMessageTypes.ProposeCredential,
+        IssuanceMessageTypes.ProposeCredential,
         'yeet',
       );
 
@@ -98,7 +98,7 @@ describe('IssuanceService', () => {
       const exchange = testData.unfinishedExchanges[0];
 
       const message = await issuanceService.findMessageByType(
-        WaciMessageTypes.ProposeCredential,
+        IssuanceMessageTypes.ProposeCredential,
         exchange.pthid,
       );
 
@@ -106,7 +106,7 @@ describe('IssuanceService', () => {
       expect(message).toHaveProperty('pthid', exchange.pthid);
       expect(message).toHaveProperty(
         'type',
-        WaciMessageTypes.ProposeCredential,
+        IssuanceMessageTypes.ProposeCredential,
       );
       expect(message).toHaveProperty('from', exchange.holderDid);
       expect(message).toHaveProperty('to', [exchange.issuerDid]);
@@ -116,13 +116,13 @@ describe('IssuanceService', () => {
       const exchange = testData.finishedExchanges[0];
 
       const message = await issuanceService.findMessageByType(
-        WaciMessageTypes.OfferCredential,
+        IssuanceMessageTypes.OfferCredential,
         exchange.thid,
       );
 
       expect(message).toBeDefined();
       expect(message).toHaveProperty('thid', exchange.thid);
-      expect(message).toHaveProperty('type', WaciMessageTypes.OfferCredential);
+      expect(message).toHaveProperty('type', IssuanceMessageTypes.OfferCredential);
       expect(message).toHaveProperty('from', exchange.issuerDid);
       expect(message).toHaveProperty('to', [exchange.holderDid]);
     });

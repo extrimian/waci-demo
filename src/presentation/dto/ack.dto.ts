@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IssuanceMessageTypes } from '../utils/issuance-utils';
+import { PresentationMessageTypes } from '../utils/presentation-utils';
 
-export class IssueCredentialDto {
+export class PresentationAckDto {
   @ApiProperty({
     type: String,
-    description: 'El tipo de mensaje WACI, en este caso una credencial',
-    example: IssuanceMessageTypes.IssueCredential,
+    description: 'El tipo de mensaje WACI, en este caso un ACK',
+    example: PresentationMessageTypes.Ack,
   })
   type: string;
 
@@ -24,15 +24,15 @@ export class IssueCredentialDto {
 
   @ApiProperty({
     type: String,
-    description: 'El DID del issuer',
-    example: 'did:quarkid:matic:issuer',
+    description: 'El DID del verifier',
+    example: 'did:quarkid:matic:verifier',
   })
   from: string;
 
   @ApiProperty({
     type: Array<String>,
-    description: 'El DID del holder',
-    examples: ['did:quarkid:matic:holder'],
+    description: 'El DID del prover',
+    examples: ['did:quarkid:matic:prover'],
   })
   to: Array<string>;
 
@@ -42,26 +42,18 @@ export class IssueCredentialDto {
   })
   body: any;
 
-  @ApiProperty({
-    type: Object,
-    description: 'Los attachments del mensaje',
-  })
-  attachments: Array<any>;
-
   constructor(
     id: string,
     thid: string,
     from: string,
     to: Array<string>,
     body: any,
-    attachments: Array<any>,
   ) {
-    this.type = IssuanceMessageTypes.IssueCredential;
+    this.type = PresentationMessageTypes.Ack;
     this.id = id;
     this.thid = thid;
     this.from = from;
     this.to = to;
     this.body = body;
-    this.attachments = attachments;
   }
 }

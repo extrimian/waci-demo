@@ -19,8 +19,8 @@ import {
 } from '@nestjs/swagger';
 import { OobInvitationDto } from './dto/oob.dto';
 import { CreateOobInvitationDto } from './dto/create-oob.dto';
-import { WaciGoalCodes, WaciMessageTypes } from './utils/issuance-utils';
-@ApiTags('Credential issuance')
+import { IssuanceGoalCode, IssuanceMessageTypes } from './utils/issuance-utils';
+@ApiTags('Emisión de credenciales')
 @Controller('issuance')
 export class IssuanceController {
   constructor(private readonly issuanceService: IssuanceService) {}
@@ -35,8 +35,10 @@ export class IssuanceController {
     @Body() createOobMessageDto: CreateOobInvitationDto,
   ): Promise<OobInvitationDto> {
     // We will deal with credential presentation in a different controller
-    if (createOobMessageDto.goalCode !== WaciGoalCodes.Issuance) {
-      throw new BadRequestException('Goal code not supported');
+    if (createOobMessageDto.goalCode !== IssuanceGoalCode) {
+      throw new BadRequestException(
+        `El Goal Code provisto es incorrecto, usar ${IssuanceGoalCode}`,
+      );
     }
     return await this.issuanceService.createOobMessage(createOobMessageDto);
   }
@@ -53,7 +55,7 @@ export class IssuanceController {
     description: 'Hubo un problema con los parámetros ingresados',
   })
   async getProposal(@Body() oobInvitationDto: OobInvitationDto) {
-    if (oobInvitationDto.type != WaciMessageTypes.OobInvitation)
+    if (oobInvitationDto.type != IssuanceMessageTypes.OobInvitation)
       throw new BadRequestException('La invitación provista es incorrecta');
 
     const credentialProposal = await this.issuanceService.proposeCredential(
@@ -78,7 +80,7 @@ export class IssuanceController {
     description: 'No pudimos encontrar la oferta de credencial',
   })
   async offerCredential(@Body() proposeCredentialDto: ProposeCredentialDto) {
-    if (proposeCredentialDto.type != WaciMessageTypes.ProposeCredential)
+    if (proposeCredentialDto.type != IssuanceMessageTypes.ProposeCredential)
       throw new BadRequestException('La propuesta provista es incorrecta');
 
     const credentialOffer = await this.issuanceService.offerCredential(
@@ -103,7 +105,7 @@ export class IssuanceController {
     description: 'No pudimos encontrar la solicitud de credencial',
   })
   async getRequest(@Body() offerCredentialDto: OfferCredentialDto) {
-    if (offerCredentialDto.type != WaciMessageTypes.OfferCredential)
+    if (offerCredentialDto.type != IssuanceMessageTypes.OfferCredential)
       throw new BadRequestException('La oferta provista es incorrecta');
 
     const credentialRequest = await this.issuanceService.requestCredential(
@@ -127,7 +129,7 @@ export class IssuanceController {
     description: 'No pudimos encontrar la credencial',
   })
   async issueCredential(@Body() requestCredentialDto: RequestCredentialDto) {
-    if (requestCredentialDto.type != WaciMessageTypes.RequestCredential)
+    if (requestCredentialDto.type != IssuanceMessageTypes.RequestCredential)
       throw new BadRequestException('La solicitud provista es incorrecta');
 
     const credentialIssuance = await this.issuanceService.issueCredential(
@@ -151,7 +153,7 @@ export class IssuanceController {
     description: 'No pudimos encontrar la confirmación de credencial',
   })
   async acknowledgeCredential(@Body() issueCredentialDto: IssueCredentialDto) {
-    if (issueCredentialDto.type != WaciMessageTypes.IssueCredential)
+    if (issueCredentialDto.type != IssuanceMessageTypes.IssueCredential)
       throw new BadRequestException('La solicitud provista es incorrecta');
 
     const ack = await this.issuanceService.acknowledgeCredential(

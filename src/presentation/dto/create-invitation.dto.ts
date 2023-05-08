@@ -1,23 +1,24 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IssuanceGoalCode } from '../utils/issuance-utils';
+import { PresentationGoalCode } from '../utils/presentation-utils';
 
-export interface InvitationBody {
+export interface PresentationInvitationBody {
   goal_code: string;
   accept: string[];
   [key: string]: any;
 }
-export class CreateOobInvitationDto {
+
+export class CreatePresentationInvitationDto {
   @ApiProperty({
-    type: IssuanceGoalCode,
+    type: PresentationGoalCode,
     description: 'El goalCode WACI para la invitación',
-    example: IssuanceGoalCode,
+    example: PresentationGoalCode,
   })
   goalCode: string;
 
   @ApiProperty({
     type: String,
-    description: 'El DID del issuer',
-    example: 'did:quarkid:matic:issuer',
+    description: 'El DID del verifier',
+    example: 'did:quarkid:matic:verifier',
   })
   senderDid: string;
 
@@ -25,5 +26,5 @@ export class CreateOobInvitationDto {
     type: Object,
     description: 'El cuerpo de la invitación',
   })
-  body: InvitationBody;
+  body: PresentationInvitationBody;
 }

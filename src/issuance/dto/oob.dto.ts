@@ -1,12 +1,12 @@
-import { OobInvitationBody } from './create-oob.dto';
+import { InvitationBody } from './create-oob.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { WaciMessageTypes } from '../utils/issuance-utils';
+import { IssuanceMessageTypes } from '../utils/issuance-utils';
 import base64url from 'base64url';
 export class OobInvitationDto {
   @ApiProperty({
     type: String,
     description: 'El tipo de mensaje WACI, en este caso una invitación',
-    example: WaciMessageTypes.OobInvitation,
+    example: IssuanceMessageTypes.OobInvitation,
   })
   type: string;
 
@@ -27,10 +27,10 @@ export class OobInvitationDto {
     type: Object,
     description: 'El cuerpo de la invitación',
   })
-  body: OobInvitationBody;
+  body: InvitationBody;
 
-  constructor(id: string, from: string, body: OobInvitationBody) {
-    this.type = WaciMessageTypes.OobInvitation;
+  constructor(id: string, from: string, body: InvitationBody) {
+    this.type = IssuanceMessageTypes.OobInvitation;
     this.id = id;
     this.from = from;
     this.body = body;

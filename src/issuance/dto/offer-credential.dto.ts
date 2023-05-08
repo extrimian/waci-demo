@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { WaciMessageTypes } from '../utils/issuance-utils';
+import { IssuanceMessageTypes } from '../utils/issuance-utils';
 
 export class OfferCredentialDto {
   @ApiProperty({
     type: String,
     description:
       'El tipo de mensaje WACI, en este caso una oferta de credencial',
-    example: WaciMessageTypes.OfferCredential,
+    example: IssuanceMessageTypes.OfferCredential,
   })
   type: string;
 
@@ -57,7 +57,7 @@ export class OfferCredentialDto {
     body: any,
     attachments: Array<any>,
   ) {
-    this.type = WaciMessageTypes.OfferCredential;
+    this.type = IssuanceMessageTypes.OfferCredential;
     this.id = id;
     this.thid = thid;
     this.from = from;

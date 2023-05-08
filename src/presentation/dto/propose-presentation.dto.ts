@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IssuanceMessageTypes } from '../utils/issuance-utils';
-export class ProposeCredentialDto {
+import { PresentationMessageTypes } from '../utils/presentation-utils';
+
+export class PresentationProposalDto {
   @ApiProperty({
     type: String,
     description:
-      'El tipo de mensaje WACI, en este caso una propuesta de credencial',
-    example: IssuanceMessageTypes.ProposeCredential,
+      'El tipo de mensaje WACI, en este caso una propuesta de presentación',
+    example: PresentationMessageTypes.ProposePresentation,
   })
   type: string;
 
@@ -24,20 +25,20 @@ export class ProposeCredentialDto {
 
   @ApiProperty({
     type: String,
-    description: 'El DID del holder',
-    example: 'did:quarkid:matic:holder',
+    description: 'El DID del prover',
+    example: 'did:quarkid:matic:prover',
   })
   from: string;
 
   @ApiProperty({
     type: Array<String>,
-    description: 'El DID de los issuers',
-    examples: ['did:quarkid:matic:issuer'],
+    description: 'El DID de los verifiers',
+    examples: ['did:quarkid:matic:verifier'],
   })
   to: Array<string>;
 
   constructor(id: string, pthid: string, from: string, to: Array<string>) {
-    this.type = IssuanceMessageTypes.ProposeCredential;
+    this.type = PresentationMessageTypes.ProposePresentation;
     this.id = id;
     this.pthid = pthid;
     this.from = from;
