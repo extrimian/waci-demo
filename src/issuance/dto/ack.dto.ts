@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IssuanceMessageTypes } from '../utils/issuance-utils';
+import { IssuanceMessageTypes } from '../../agent/utils/waci-types';
 
 export class AckDto {
   @ApiProperty({

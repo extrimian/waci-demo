@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { PresentationInvitationBody } from './create-invitation.dto';
-import { PresentationMessageTypes } from '../utils/presentation-utils';
+import { PresentationMessageTypes } from '../../agent/utils/waci-types';
+import base64url from 'base64url';
 
 export class PresentationInvitationDto {
   @ApiProperty({
@@ -35,5 +36,25 @@ export class PresentationInvitationDto {
     this.id = id;
     this.from = from;
     this.body = body;
+  }
+
+  static from(invitationMessage: string) {
+    const invitationJson = JSON.parse(
+      base64url.decode(invitationMessage.split('_oob=')[1]),
+    );
+
+    return new PresentationInvitationDto(
+      invitationJson.id,
+      invitationJson.from,
+      invitationJson.body,
+    );
+  }
+
+  static toInvitationMessage(oobInvitationDto: PresentationInvitationDto) {
+    const protocol = 'didcomm://?_oob=';
+    const invitationMessage =
+      protocol + base64url.encode(JSON.stringify(oobInvitationDto));
+
+    return invitationMessage;
   }
 }

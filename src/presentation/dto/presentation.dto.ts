@@ -1,17 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PresentationMessageTypes } from '../utils/presentation-utils';
+import { PresentationMessageTypes } from '../../agent/utils/waci-types';
 
 export class PresentationProofDto {
-  // "type": "https://didcomm.org/present-proof/3.0/presentation",
-  // "id": "f1ca8245-ab2d-4d9c-8d7d-94bf310314ef",
-  // "thid": "95e63a5f-73e1-46ac-b269-48bb22591bfa",
-  // "from": "did:example:prover",
-  // "to": [
-  //   "did:example:verifier"
-  // ],
-  // "body": {},
-  // "attachments":
-
   @ApiProperty({
     type: String,
     description: 'El tipo de mensaje WACI, en este caso una presentación',

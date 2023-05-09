@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IssuanceGoalCode } from '../utils/issuance-utils';
+import { WaciGoalCodes } from 'src/agent/utils/waci-types';
 
 export interface InvitationBody {
   goal_code: string;
@@ -8,9 +8,9 @@ export interface InvitationBody {
 }
 export class CreateOobInvitationDto {
   @ApiProperty({
-    type: IssuanceGoalCode,
+    type: WaciGoalCodes.Issuance,
     description: 'El goalCode WACI para la invitación',
-    example: IssuanceGoalCode,
+    example: WaciGoalCodes.Issuance,
   })
   goalCode: string;
 

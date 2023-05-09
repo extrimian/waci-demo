@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DID } from '@extrimian/agent';
-import { IssuanceMessageTypes } from '../utils/issuance-utils';
+import { IssuanceMessageTypes } from '../../agent/utils/waci-types';
 
 export class RequestCredentialDto {
   @ApiProperty({

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PresentationMessageTypes } from '../utils/presentation-utils';
+import { PresentationMessageTypes } from '../../agent/utils/waci-types';
 
 export class PresentationRequestDto {
   @ApiProperty({

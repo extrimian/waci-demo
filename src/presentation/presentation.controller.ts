@@ -20,9 +20,9 @@ import {
 } from '@nestjs/swagger';
 import { CreatePresentationInvitationDto } from './dto/create-invitation.dto';
 import {
-  PresentationGoalCode,
   PresentationMessageTypes,
-} from './utils/presentation-utils';
+  WaciGoalCodes,
+} from 'src/agent/utils/waci-types';
 
 @ApiTags('Presentación de credenciales')
 @Controller('presentation')
@@ -38,9 +38,9 @@ export class PresentationController {
   async createInvitation(
     @Body() createInvitationDto: CreatePresentationInvitationDto,
   ): Promise<PresentationInvitationDto> {
-    if (createInvitationDto.goalCode !== PresentationGoalCode)
+    if (createInvitationDto.goalCode !== WaciGoalCodes.Presentation)
       throw new BadRequestException(
-        `El Goal Code provisto es incorrecto, usar ${PresentationGoalCode}`,
+        `El Goal Code provisto es incorrecto, usar ${WaciGoalCodes.Presentation}`,
       );
 
     return await this.presentationService.createInvitation(createInvitationDto);
@@ -111,7 +111,7 @@ export class PresentationController {
     description: 'No pudimos encontrar la presentación de credencial',
   })
   async createPresentation(
-    @Body() presentationRequest: PresentationProposalDto,
+    @Body() presentationRequest: PresentationRequestDto,
   ): Promise<PresentationProofDto> {
     if (
       presentationRequest.type != PresentationMessageTypes.RequestPresentation
@@ -140,12 +140,12 @@ export class PresentationController {
     description: 'No pudimos encontrar la confirmación de verificación',
   })
   async createAck(
-    @Body() presentationRequest: PresentationProposalDto,
+    @Body() presentationProof: PresentationProofDto,
   ): Promise<PresentationAckDto> {
-    if (presentationRequest.type != PresentationMessageTypes.PresentProof)
+    if (presentationProof.type != PresentationMessageTypes.PresentProof)
       throw new BadRequestException('La solicitud provista es incorrecta');
 
-    const ack = await this.presentationService.createAck(presentationRequest);
+    const ack = await this.presentationService.createAck(presentationProof);
 
     if (!ack)
       throw new NotFoundException('No se encontró la confirmación solicitada');

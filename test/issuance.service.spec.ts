@@ -122,7 +122,10 @@ describe('IssuanceService', () => {
 
       expect(message).toBeDefined();
       expect(message).toHaveProperty('thid', exchange.thid);
-      expect(message).toHaveProperty('type', IssuanceMessageTypes.OfferCredential);
+      expect(message).toHaveProperty(
+        'type',
+        IssuanceMessageTypes.OfferCredential,
+      );
       expect(message).toHaveProperty('from', exchange.issuerDid);
       expect(message).toHaveProperty('to', [exchange.holderDid]);
     });

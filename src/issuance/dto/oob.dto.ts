@@ -1,6 +1,6 @@
 import { InvitationBody } from './create-oob.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { IssuanceMessageTypes } from '../utils/issuance-utils';
+import { IssuanceMessageTypes } from '../../agent/utils/waci-types';
 import base64url from 'base64url';
 export class OobInvitationDto {
   @ApiProperty({

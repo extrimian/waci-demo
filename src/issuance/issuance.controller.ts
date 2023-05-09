@@ -19,7 +19,7 @@ import {
 } from '@nestjs/swagger';
 import { OobInvitationDto } from './dto/oob.dto';
 import { CreateOobInvitationDto } from './dto/create-oob.dto';
-import { IssuanceGoalCode, IssuanceMessageTypes } from './utils/issuance-utils';
+import { IssuanceMessageTypes, WaciGoalCodes } from '../agent/utils/waci-types';
 @ApiTags('Emisión de credenciales')
 @Controller('issuance')
 export class IssuanceController {
@@ -35,9 +35,9 @@ export class IssuanceController {
     @Body() createOobMessageDto: CreateOobInvitationDto,
   ): Promise<OobInvitationDto> {
     // We will deal with credential presentation in a different controller
-    if (createOobMessageDto.goalCode !== IssuanceGoalCode) {
+    if (createOobMessageDto.goalCode !== WaciGoalCodes.Issuance) {
       throw new BadRequestException(
-        `El Goal Code provisto es incorrecto, usar ${IssuanceGoalCode}`,
+        `El Goal Code provisto es incorrecto, usar ${WaciGoalCodes.Issuance}`,
       );
     }
     return await this.issuanceService.createOobMessage(createOobMessageDto);

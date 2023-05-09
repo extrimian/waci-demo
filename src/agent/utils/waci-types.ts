@@ -1,6 +1,3 @@
-import { AgentTypes } from 'src/agent/utils/agent-types';
-import * as fs from 'fs';
-
 export enum IssuanceMessageTypes {
   OobInvitation = 'https://didcomm.org/out-of-band/2.0/invitation',
   ProposeCredential = 'https://didcomm.org/issue-credential/3.0/propose-credential',
@@ -11,15 +8,17 @@ export enum IssuanceMessageTypes {
   ProblemReport = 'https://didcomm.org/report-problem/2.0/problem-report',
 }
 
-export const IssuanceGoalCode = 'streamlined-vc';
-
-export const enum WACIMessageResponseType {
-  CreateThread,
-  ReplyThread,
+export enum PresentationMessageTypes {
+  Invitation = 'https://didcomm.org/out-of-band/2.0/invitation',
+  ProposePresentation = 'https://didcomm.org/present-proof/3.0/propose-presentation',
+  RequestPresentation = 'https://didcomm.org/present-proof/3.0/request-presentation',
+  PresentProof = 'https://didcomm.org/present-proof/3.0/presentation',
+  Ack = 'https://didcomm.org/present-proof/3.0/ack',
 }
 
-export function getDidByType(type: AgentTypes) {
-  const json = JSON.stringify(fs.readFileSync(`storage/${type}.json`));
-  const operationalDid = JSON.parse(json).operationalDid;
-  return operationalDid;
+export type WaciMessageType = IssuanceMessageTypes | PresentationMessageTypes;
+
+export enum WaciGoalCodes {
+  Presentation = 'streamlined-vp',
+  Issuance = 'streamlined-vc',
 }
