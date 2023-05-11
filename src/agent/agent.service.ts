@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -20,6 +21,11 @@ import * as fs from 'fs';
 import { glob } from 'glob';
 import { DWNDebugTransport } from './utils/debug-transport';
 import config from '../config';
+import {
+  IssuanceMessageTypes,
+  PresentationMessageTypes,
+  WaciMessageType,
+} from './utils/waci-types';
 
 export type AgentInfo = {
   agentType: AgentType;
@@ -253,5 +259,135 @@ export class AgentService {
       } as DidDocumentByType;
     });
     return didDocumentsByType;
+  }
+
+  // Verifies that the agents are initialized and that their DIDs match the ones in the request
+  async verifyInitialization(
+    agentData: { agentType: AgentTypes; expectedDid?: string }[],
+  ): Promise<AgentInfo[]> {
+    enum TranslatedAgentTypes {
+      issuer = 'emisor',
+      holder = 'receptor',
+      verifier = 'verificador',
+    }
+
+    agentData.forEach((data) => {
+      if (!this.isAgentPresent(data.agentType)) {
+        Logger.error(`${data.agentType} agent not initialized`, 'AgentService');
+        throw new NotFoundException(
+          `El agente ${
+            TranslatedAgentTypes[data.agentType]
+          } no fue inicializado`,
+        );
+      }
+    });
+
+    const agentTypes = agentData.map((data) => data.agentType);
+    const agentInfoArray = await this.initializeAgents(agentTypes);
+
+    // Check that the DIDs match the ones in the request, if given
+    agentInfoArray.forEach((agentInfo, index) => {
+      if (
+        agentData[index].expectedDid &&
+        agentInfo.agent.identity.getOperationalDID().value !==
+          agentData[index].expectedDid
+      ) {
+        Logger.error(
+          `${agentInfo.agentType} agent DID does not match the one in the request`,
+          'AgentService',
+        );
+        throw new BadRequestException(
+          `El DID del agente ${
+            TranslatedAgentTypes[agentData[index].agentType]
+          } no coincide con el dado`,
+        );
+      }
+    });
+
+    return agentInfoArray;
+  }
+  async findMessageByType(
+    messageType: WaciMessageType,
+    threadId: string,
+  ): Promise<any> {
+    // Get the message thread from the correct agent's WACI storage
+    const waciStorage = await this.getWaciStorage(messageType, threadId);
+    // Propose credential is a special case, because the threadId is the id of the invitation, stored as thid
+    if (
+      messageType === IssuanceMessageTypes.ProposeCredential ||
+      messageType === PresentationMessageTypes.ProposePresentation
+    ) {
+      // If I'm looking for a proposal, I need to find the proposal with the same pthid as the threadId (the id of the invitation)
+      // The same pthid can lead to many proposals, so I want the last one
+      const lastThread = Object.values(waciStorage).pop() as any[];
+      const result = lastThread
+        .filter(
+          (message: any) =>
+            message.type === messageType && message.pthid === threadId,
+        )
+        .pop();
+
+      return result;
+    }
+
+    // ThreadId is the id of the proposal
+    const result = waciStorage[threadId]?.find(
+      (message) => message.type === messageType,
+    );
+
+    return result;
+  }
+
+  private async getWaciStorage(
+    messageType: WaciMessageType,
+    threadId: string,
+  ): Promise<any> {
+    const agentType = this.getAgentType(messageType);
+    const filePath = `${this.storagePath}/${agentType}-waci-storage.json`;
+    try {
+      const fileContent = await fs.promises.readFile(filePath, 'utf-8');
+      return JSON.parse(fileContent) as JSON;
+    } catch (err) {
+      // handle file reading or parsing errors
+      Logger.error(
+        `Error searching for message in ${agentType}'s storage, thread ${threadId}: ${err}`,
+        'IssueCredentialService',
+      );
+
+      throw new InternalServerErrorException(
+        'Hubo un error buscando el mensaje en el almacenamiento interno',
+      );
+    }
+  }
+
+  private getAgentType(messageType: WaciMessageType) {
+    switch (messageType) {
+      // Issuance flow
+      case IssuanceMessageTypes.ProposeCredential:
+        return AgentTypes.issuer;
+      case IssuanceMessageTypes.OfferCredential:
+        return AgentTypes.issuer;
+      case IssuanceMessageTypes.RequestCredential:
+        return AgentTypes.issuer;
+      case IssuanceMessageTypes.IssueCredential:
+        return AgentTypes.issuer;
+      case IssuanceMessageTypes.Ack:
+        return AgentTypes.holder;
+
+      // Presentation flow
+      case PresentationMessageTypes.ProposePresentation:
+        return AgentTypes.verifier;
+      case PresentationMessageTypes.RequestPresentation:
+        return AgentTypes.verifier;
+      case PresentationMessageTypes.PresentProof:
+        return AgentTypes.holder;
+      case PresentationMessageTypes.Ack:
+        return AgentTypes.verifier; //TODO: Check this with a complete verification exchange
+
+      default:
+        throw new Error(
+          `Cannot decide agent type for message type ${messageType}`,
+        );
+    }
   }
 }

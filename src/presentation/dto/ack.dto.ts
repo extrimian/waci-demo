@@ -1,12 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IssuanceMessageTypes } from '../../agent/utils/waci-types';
+import { PresentationMessageTypes } from '../../agent/utils/waci-types';
 
-export class OfferCredentialDto {
+export class PresentationAckDto {
   @ApiProperty({
     type: String,
-    description:
-      'El tipo de mensaje WACI, en este caso una oferta de credencial',
-    example: IssuanceMessageTypes.OfferCredential,
+    description: 'El tipo de mensaje WACI, en este caso un ACK',
+    example: PresentationMessageTypes.Ack,
   })
   type: string;
 
@@ -25,15 +24,15 @@ export class OfferCredentialDto {
 
   @ApiProperty({
     type: String,
-    description: 'El DID del issuer',
-    example: 'did:quarkid:matic:issuer',
+    description: 'El DID del verifier',
+    example: 'did:quarkid:matic:verifier',
   })
   from: string;
 
   @ApiProperty({
     type: Array<String>,
-    description: 'El DID del holder',
-    examples: ['did:quarkid:matic:holder'],
+    description: 'El DID del prover',
+    examples: ['did:quarkid:matic:prover'],
   })
   to: Array<string>;
 
@@ -43,26 +42,18 @@ export class OfferCredentialDto {
   })
   body: any;
 
-  @ApiProperty({
-    type: Array<Object>,
-    description: 'Los Credential Manifest adjuntos al mensaje',
-  })
-  attachments: Array<any>;
-
   constructor(
     id: string,
     thid: string,
     from: string,
     to: Array<string>,
     body: any,
-    attachments: Array<any>,
   ) {
-    this.type = IssuanceMessageTypes.OfferCredential;
+    this.type = PresentationMessageTypes.Ack;
     this.id = id;
     this.thid = thid;
     this.from = from;
     this.to = to;
     this.body = body;
-    this.attachments = attachments;
   }
 }

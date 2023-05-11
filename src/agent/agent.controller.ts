@@ -7,9 +7,6 @@ import {
   BadRequestException,
   InternalServerErrorException,
   Body,
-  Logger,
-  Query,
-  HttpStatus,
 } from '@nestjs/common';
 import { AgentService } from './agent.service';
 import {

@@ -1,25 +1,27 @@
-import { InvitationBody } from './create-oob.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { IssuanceMessageTypes } from '../../agent/utils/waci-types';
+import { PresentationInvitationBody } from './create-invitation.dto';
+import { PresentationMessageTypes } from '../../agent/utils/waci-types';
 import base64url from 'base64url';
-export class OobInvitationDto {
+
+export class PresentationInvitationDto {
   @ApiProperty({
     type: String,
-    description: 'El tipo de mensaje WACI, en este caso una invitación',
-    example: IssuanceMessageTypes.OobInvitation,
+    description: 'El tipo de mensaje, en este caso una invitación',
+    example: PresentationMessageTypes.Invitation,
   })
   type: string;
 
   @ApiProperty({
     type: String,
-    description: 'El ID del mensaje',
+    description: 'El id del mensaje',
+    example: 'invitation-id',
   })
   id: string;
 
   @ApiProperty({
     type: String,
-    description: 'El DID del issuer',
-    example: 'did:quarkid:matic:issuer',
+    description: 'El DID del verifier',
+    example: 'did:quarkid:matic:verifier',
   })
   from: string;
 
@@ -27,10 +29,10 @@ export class OobInvitationDto {
     type: Object,
     description: 'El cuerpo de la invitación',
   })
-  body: InvitationBody;
+  body: PresentationInvitationBody;
 
-  constructor(id: string, from: string, body: InvitationBody) {
-    this.type = IssuanceMessageTypes.OobInvitation;
+  constructor(id: string, from: string, body: PresentationInvitationBody) {
+    this.type = PresentationMessageTypes.Invitation;
     this.id = id;
     this.from = from;
     this.body = body;
@@ -41,14 +43,14 @@ export class OobInvitationDto {
       base64url.decode(invitationMessage.split('_oob=')[1]),
     );
 
-    return new OobInvitationDto(
+    return new PresentationInvitationDto(
       invitationJson.id,
       invitationJson.from,
       invitationJson.body,
     );
   }
 
-  static toInvitationMessage(oobInvitationDto: OobInvitationDto) {
+  static toInvitationMessage(oobInvitationDto: PresentationInvitationDto) {
     const protocol = 'didcomm://?_oob=';
     const invitationMessage =
       protocol + base64url.encode(JSON.stringify(oobInvitationDto));
