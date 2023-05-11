@@ -312,7 +312,6 @@ export class AgentService {
   ): Promise<any> {
     // Get the message thread from the correct agent's WACI storage
     const waciStorage = await this.getWaciStorage(messageType, threadId);
-
     // Propose credential is a special case, because the threadId is the id of the invitation, stored as thid
     if (
       messageType === IssuanceMessageTypes.ProposeCredential ||
@@ -324,8 +323,7 @@ export class AgentService {
       const result = lastThread
         .filter(
           (message: any) =>
-            message.type === IssuanceMessageTypes.ProposeCredential &&
-            message.pthid === threadId,
+            message.type === messageType && message.pthid === threadId,
         )
         .pop();
 

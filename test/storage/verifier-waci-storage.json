@@ -1,0 +1,184 @@
+{
+  "ef9662ad-a431-4ba4-ad63-7ae5a64e75ae": [
+    {
+      "type": "https://didcomm.org/present-proof/3.0/propose-presentation",
+      "id": "ef9662ad-a431-4ba4-ad63-7ae5a64e75ae",
+      "pthid": "50fdca7a-f0e1-4c73-8e01-6a8fc3603905",
+      "from": "did:cadena:matic:EiDHj66grunJ5zRTKZGN_yM6T1PlWnBqVdY5Wi08Juq_rg",
+      "to": ["did:cadena:matic:EiCRz-J72te32N8TtTINwutetlP2qV9pfbEQCwAmosNlBg"]
+    },
+    {
+      "type": "https://didcomm.org/present-proof/3.0/request-presentation",
+      "id": "42009cba-c3cd-4c8e-a82e-952da1e5c206",
+      "thid": "ef9662ad-a431-4ba4-ad63-7ae5a64e75ae",
+      "from": "did:cadena:matic:EiCRz-J72te32N8TtTINwutetlP2qV9pfbEQCwAmosNlBg",
+      "to": ["did:cadena:matic:EiDHj66grunJ5zRTKZGN_yM6T1PlWnBqVdY5Wi08Juq_rg"],
+      "body": {},
+      "attachments": [
+        {
+          "id": "f8f30459-394c-4043-86ff-29877b800b5d",
+          "media_type": "application/json",
+          "format": "dif/presentation-exchange/definitions@v1.0",
+          "data": {
+            "json": {
+              "options": {
+                "challenge": "fb96a627-23cf-4865-98bb-323587fff51c"
+              },
+              "presentation_definition": {
+                "id": "eab5ffce-9215-4a42-ae42-1d18c7500da4",
+                "input_descriptors": [
+                  {
+                    "id": "Alumni Credential",
+                    "name": "AlumniCredential",
+                    "constraints": {
+                      "fields": [
+                        {
+                          "path": ["$.credentialSubject.givenName"],
+                          "filter": { "type": "string" }
+                        },
+                        {
+                          "path": ["$.credentialSubject.familyName"],
+                          "filter": { "type": "string" }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "b9fd3b63-e25e-455f-8825-8f890a926453": [
+    {
+      "type": "https://didcomm.org/present-proof/3.0/propose-presentation",
+      "id": "b9fd3b63-e25e-455f-8825-8f890a926453",
+      "pthid": "50fdca7a-f0e1-4c73-8e01-6a8fc3603905",
+      "from": "did:cadena:matic:EiDHj66grunJ5zRTKZGN_yM6T1PlWnBqVdY5Wi08Juq_rg",
+      "to": ["did:cadena:matic:EiCRz-J72te32N8TtTINwutetlP2qV9pfbEQCwAmosNlBg"]
+    },
+    {
+      "type": "https://didcomm.org/present-proof/3.0/request-presentation",
+      "id": "f3a06830-3eea-4769-831a-270de7f2e33f",
+      "thid": "b9fd3b63-e25e-455f-8825-8f890a926453",
+      "from": "did:cadena:matic:EiCRz-J72te32N8TtTINwutetlP2qV9pfbEQCwAmosNlBg",
+      "to": ["did:cadena:matic:EiDHj66grunJ5zRTKZGN_yM6T1PlWnBqVdY5Wi08Juq_rg"],
+      "body": {},
+      "attachments": [
+        {
+          "id": "f06befc2-32ff-4e25-b10d-8cea21e803e5",
+          "media_type": "application/json",
+          "format": "dif/presentation-exchange/definitions@v1.0",
+          "data": {
+            "json": {
+              "options": {
+                "challenge": "9082ac3c-8bfb-4b62-8a9f-7a31bf1c927a"
+              },
+              "presentation_definition": {
+                "id": "bd35262c-eb67-4af6-8c99-ef022339af83",
+                "input_descriptors": [
+                  {
+                    "id": "Alumni Credential",
+                    "name": "AlumniCredential",
+                    "constraints": {
+                      "fields": [
+                        {
+                          "path": ["$.credentialSubject.givenName"],
+                          "filter": { "type": "string" }
+                        },
+                        {
+                          "path": ["$.credentialSubject.familyName"],
+                          "filter": { "type": "string" }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "https://didcomm.org/present-proof/3.0/presentation",
+      "id": "ab85bce7-398d-4f83-8842-3d3e049cf7df",
+      "thid": "b9fd3b63-e25e-455f-8825-8f890a926453",
+      "from": "did:cadena:matic:EiDHj66grunJ5zRTKZGN_yM6T1PlWnBqVdY5Wi08Juq_rg",
+      "to": ["did:cadena:matic:EiCRz-J72te32N8TtTINwutetlP2qV9pfbEQCwAmosNlBg"],
+      "body": {},
+      "attachments": [
+        {
+          "id": "9a4e3013-71a9-4bae-ba20-933e1a2e5ae5",
+          "media_type": "application/ld+json",
+          "format": "dif/presentation-exchange/submission@v1.0",
+          "data": {
+            "json": {
+              "@context": [
+                "https://extrimian.blob.core.windows.net/rskec/securityv1.jsonld",
+                "https://extrimian.blob.core.windows.net/rskec/credentialsv1.jsonld",
+                "https://extrimian.blob.core.windows.net/rskec/presentation-exchangesubmissionv1.jsonld"
+              ],
+              "type": ["VerifiablePresentation", "PresentationSubmission"],
+              "holder": "did:cadena:matic:EiDHj66grunJ5zRTKZGN_yM6T1PlWnBqVdY5Wi08Juq_rg",
+              "presentation_submission": {
+                "id": "709d8332-cdaf-4b4c-ba96-894ffb41f09b",
+                "definition_id": "bd35262c-eb67-4af6-8c99-ef022339af83",
+                "descriptor_map": [
+                  {
+                    "id": "Alumni Credential",
+                    "format": "ldp_vp",
+                    "path": "$.verifiableCredential[0]"
+                  }
+                ]
+              },
+              "verifiableCredential": [
+                {
+                  "@context": [
+                    "https://www.w3.org/2018/credentials/v1",
+                    "https://www.w3.org/2018/credentials/examples/v1",
+                    "https://w3id.org/security/bbs/v1"
+                  ],
+                  "id": "http://example.edu/credentials/58473",
+                  "type": ["VerifiableCredential", "AlumniCredential"],
+                  "issuer": "did:quarkid:starknet:EiCIBfgaePl4ESOOD-00GU8EAJSgwse1JDDIHYRz4aOtww",
+                  "issuanceDate": "2023-05-11T13:32:52.430Z",
+                  "credentialSubject": {
+                    "id": "did:cadena:matic:EiDHj66grunJ5zRTKZGN_yM6T1PlWnBqVdY5Wi08Juq_rg",
+                    "givenName": "John",
+                    "familyName": "Doe"
+                  },
+                  "proof": {
+                    "type": "BbsBlsSignature2020",
+                    "created": "2023-05-11T13:33:04Z",
+                    "proofPurpose": "assertionMethod",
+                    "proofValue": "uUFJHVdLHM4OdyV1sqtYeePziyO6h9wM4D6Hqw2lVLwJKs9grVxC4pa+jM7rXceCMKVg9X44OT7IyqxonIH7xLuNJjBkG7KYma9urLMBCo4x5JoTWPaG1p7URXapIpy1ng+avITVXJin9XQoxPxyNA==",
+                    "verificationMethod": "did:cadena:matic:EiC95hlWxiM2SHRlNBNo8Is7PPSZPRs-Yy5-d-mFCoKdUw#vc-bbsbls"
+                  }
+                }
+              ],
+              "proof": {
+                "type": "RsaSignature2018",
+                "created": "2023-05-11T13:57:01Z",
+                "challenge": "9082ac3c-8bfb-4b62-8a9f-7a31bf1c927a",
+                "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..Z7Bu7YTQAU_XrKlyFzKgghmfYSzPgCdf2Au9IYtcbc3BUbJr0PE-DJF-D5SCumFsQwKLbmQfm-knPeCo6D-LxpdFUcZFWPjd5z2K0Ghxy4D-FfzKIp4AibgwUOauc5-Hc6ftalLRM5gtxYk3-0zcSFfUqi0TMizVx128gCh3uaqIs1CFExeIjY1Yw1vj2VkwZLOsnZrZ-h8sjFY2zDjIR2DD-DbSNuI8kzzySD-qK1HWuAlgvpKuQDLLPFVixuAnlIcrzVsYiiV_K6Gg8JKupljdMyM6ysvnaY4exhuspTWjfYKSA8lOaBh7ASMKOiN8Qo74EGj6DdrpjVWvePbAlg",
+                "proofPurpose": "authentication",
+                "verificationMethod": "did:cadena:matic:EiDHj66grunJ5zRTKZGN_yM6T1PlWnBqVdY5Wi08Juq_rg#rsa"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "https://didcomm.org/present-proof/3.0/ack",
+      "id": "c0303ceb-bbd0-445a-9b29-65b54fca1909",
+      "thid": "b9fd3b63-e25e-455f-8825-8f890a926453",
+      "from": "did:cadena:matic:EiCRz-J72te32N8TtTINwutetlP2qV9pfbEQCwAmosNlBg",
+      "to": ["did:cadena:matic:EiDHj66grunJ5zRTKZGN_yM6T1PlWnBqVdY5Wi08Juq_rg"],
+      "body": { "status": "OK" }
+    }
+  ]
+}
