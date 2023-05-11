@@ -12,7 +12,6 @@ import {
 import { DWNMessage, MessageStorage } from '@extrimian/dwn-client';
 import { DIDDocument, DIDDocumentUtils } from '@extrimian/did-core';
 import { DID } from '@extrimian/agent';
-import { Logger } from '@nestjs/common';
 import * as fs from 'fs';
 
 export class DWNDebugTransport implements ITransport {
