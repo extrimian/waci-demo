@@ -25,14 +25,14 @@ export class PresentationProofDto {
   @ApiProperty({
     type: String,
     description: 'El DID del prover',
-    example: 'did:quarkid:matic:prover',
+    example: 'did:method:prover',
   })
   from: string;
 
   @ApiProperty({
     type: Array<String>,
     description: 'El DID del verifier',
-    examples: ['did:quarkid:matic:verifier'],
+    examples: ['did:method:verifier'],
   })
   to: Array<string>;
 
