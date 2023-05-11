@@ -89,6 +89,10 @@ Primero debemos crear la solicitud de presentación de credencial. Para eso, hay
 
 Este paso es análogo a la creación de invitación en la emisión de la credencial: el `verifier` está creando la invitación para enviarla al `holder` y que éste pueda presentarle la credencial. 
 
+
+[create-presentation-invitation](https://github.com/extrimian/waci-demo/assets/58373778/36a03f83-2d2d-4122-bd55-0f16149d4c1c)
+
+
 #### **Crear propuesta de presentación**
 Luego, copiamos la invitación obtenida en el paso anterior y la pegamos en el cuerpo del siguiente endpoint: `POST /presentation/proposal`.
 
