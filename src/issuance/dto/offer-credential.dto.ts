@@ -26,14 +26,14 @@ export class OfferCredentialDto {
   @ApiProperty({
     type: String,
     description: 'El DID del issuer',
-    example: 'did:quarkid:matic:issuer',
+    example: 'did:method:issuer',
   })
   from: string;
 
   @ApiProperty({
     type: Array<String>,
     description: 'El DID del holder',
-    examples: ['did:quarkid:matic:holder'],
+    examples: ['did:method:holder'],
   })
   to: Array<string>;
 

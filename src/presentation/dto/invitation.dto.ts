@@ -21,7 +21,7 @@ export class PresentationInvitationDto {
   @ApiProperty({
     type: String,
     description: 'El DID del verifier',
-    example: 'did:quarkid:matic:verifier',
+    example: 'did:method:verifier',
   })
   from: string;
 

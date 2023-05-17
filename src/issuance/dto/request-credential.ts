@@ -26,14 +26,14 @@ export class RequestCredentialDto {
   @ApiProperty({
     type: String,
     description: 'El DID del holder',
-    example: 'did:quarkid:matic:holder',
+    example: 'did:method:holder',
   })
   from: string;
 
   @ApiProperty({
     type: Array<String>,
     description: 'El DID del issuer',
-    examples: ['did:quarkid:matic:issuer'],
+    examples: ['did:method:issuer'],
   })
   to: Array<string>;
 

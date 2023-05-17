@@ -59,7 +59,7 @@ export class IssuanceService {
       holderInfo.agent.vc.credentialArrived.on((vc) => {
         if (vc) {
           holderInfo.agent.vc.saveCredential(vc);
-          Logger.debug(
+          Logger.log(
             'Credential arrived in holder agent',
             'IssueCredentialService',
           );

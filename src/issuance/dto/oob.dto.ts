@@ -19,7 +19,7 @@ export class OobInvitationDto {
   @ApiProperty({
     type: String,
     description: 'El DID del issuer',
-    example: 'did:quarkid:matic:issuer',
+    example: 'did:method:issuer',
   })
   from: string;
 
