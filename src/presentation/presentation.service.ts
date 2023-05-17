@@ -70,7 +70,6 @@ export class PresentationService {
             ),
           );
         }
-        //TODO: Validate the presentation
         if (!presentation.vcVerified || !presentation.presentationVerified) {
           reject(new ForbiddenException('La presentación no es válida'));
         }

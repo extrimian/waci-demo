@@ -46,7 +46,7 @@ export class AgentService {
 
   async isAgentPresent(type: AgentType) {
     const files = await glob(`${this.storagePath}/${type}*`);
-    Logger.debug(`Agent ${type} present`, 'AgentService');
+    // Logger.debug(`Agent ${type} present`, 'AgentService');
     return files.length > 0;
   }
 
@@ -61,7 +61,6 @@ export class AgentService {
 
   // Returns the DIDDocument for each agent type
   async findAll() {
-    Logger.debug("Finding all agents' DID Documents", 'AgentService');
     const presentAgentPromises = Object.values(AgentTypes).map((agentType) =>
       this.isAgentPresent(agentType),
     );
@@ -120,7 +119,6 @@ export class AgentService {
   async initializeAgents(agentTypes?: AgentType[]): Promise<AgentInfo[]> {
     // Create all agents by default
     agentTypes = agentTypes || Object.values(AgentTypes);
-    Logger.debug(`Initializing agents: ${agentTypes.join(', ')}`);
 
     const agents: Agent[] = [];
 
@@ -160,6 +158,9 @@ export class AgentService {
       };
     });
 
+    // Timeout for 10s to allow the agents to finish their initialization, this will be fixed in the next version
+    await new Promise((resolve) => setTimeout(resolve, 10000));
+
     const registeredAgents = await this.registerAgents(agentInfoArray);
 
     return registeredAgents;
@@ -181,19 +182,11 @@ export class AgentService {
         unregisteredAgents.push(agentInfo);
       } else {
         registeredAgents.push(agentInfo);
-        Logger.debug(
-          `Agent ${agentInfo.agentType} already has a DID: ${agentDid.value}`,
-          'AgentService',
-        );
       }
     });
 
     // Launch creation operation
     const didCreationPromises = unregisteredAgents.map((agentInfo) => {
-      Logger.debug(
-        `Creating DID for agent ${agentInfo.agentType}`,
-        'AgentService',
-      );
       return agentInfo.agent.identity.createNewDID({
         dwnUrl: this.dwnUrl,
       });
@@ -207,7 +200,7 @@ export class AgentService {
             Logger.error('Error creating DID', 'AgentService');
             reject(new InternalServerErrorException('Error creating DID'));
           }
-          Logger.debug(
+          Logger.log(
             `DID published for ${agentInfo.agentType}: ${args.did.value}`,
             'AgentService',
           );
@@ -217,8 +210,6 @@ export class AgentService {
     });
 
     // Wait for all Promises to resolve
-    // DID creation aparently needs not be awaited, but the listeners do
-    // await Promise.all(didCreationPromises);
     try {
       await Promise.all(didCreationListeners);
 
@@ -382,7 +373,7 @@ export class AgentService {
       case PresentationMessageTypes.PresentProof:
         return AgentTypes.holder;
       case PresentationMessageTypes.Ack:
-        return AgentTypes.verifier; //TODO: Check this with a complete verification exchange
+        return AgentTypes.verifier;
 
       default:
         throw new Error(

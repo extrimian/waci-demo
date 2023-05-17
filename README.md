@@ -1,7 +1,12 @@
 # WACI Demo
 
 ## Descripción
-Este repo expone una demonstración interactiva del intercambio Wallet And Credential Interaction (WACI) entre dos Agentes de Extrimian para mostrar el funcionamiento interno de nuestra solución SSI. El objetivo es proveer una API simple donde crear agentes y emitir credenciales de prueba, viendo el resultado de cada paso intermedio en la comunicación entre los agentes SSI.
+Este repo expone una demonstración interactiva del intercambio [Wallet And Credential Interaction (WACI)](https://identity.foundation/waci-didcomm/) entre dos Agentes de Extrimian para mostrar el funcionamiento interno de nuestra solución SSI. El objetivo es proveer una API simple donde crear agentes y emitir credenciales de prueba, viendo el resultado de cada paso intermedio en la comunicación entre los agentes SSI.
+
+## Requisitos
+- Node.js >= v14.21.3
+- Yarn
+
 ## Instalación
 Simplemente correr el comando `yarn install` para instalar las dependencias del proyecto.
 
@@ -15,7 +20,9 @@ La aplicación se configura con valores por defecto y mediante variables de ento
 - URL del Decentralized Web Node (DWN): `DWN_URL`
 - URL del servicio de anchor Modena: `MODENA_URL`
 
-> Nota: Consultar en el archivo .env.example para ver los valores por defecto. Estos también están disponibles en src/config.ts
+Para obtener enlaces a servicios de DWN y Modena personalizados utilizar el [portal de SaaS de Extrimian](https://idportal.extrimian.com/).
+
+> Nota: Consultar en el archivo .env.example para ver los valores por defecto.
 
 ## Correr la aplicación
 Basta con correr el comand `yarn start` para correr la aplicación en modo desarrollo. La aplicación se ejecutará en el puerto 3000 por defecto. 
@@ -114,4 +121,3 @@ Este paso representa el fin del intercambio, donde el `verifier` tiene la opció
 
 ### Logs y almacenamiento
 La aplicación guarda los logs de los agentes y los mensajes enviados a los DWN en la carpeta `storage` por defecto. Ahí se puede hacer un seguimiento de los intercambios WACI que realizan los agentes, ver los mensajes cifrados enviados al DWN y acceder al almacenamiento privado de cada uno de los agentes, donde se almacenan sus claves.
-
